@@ -1,14 +1,8 @@
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import {
-  getServerSession,
-  type DefaultSession,
-  type NextAuthOptions,
-} from 'next-auth';
-import { type Adapter } from 'next-auth/adapters';
-import DiscordProvider from 'next-auth/providers/discord';
+import { type DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth';
+import EmailProvider, { type SendVerificationRequestParams } from 'next-auth/providers/email';
 
-import { env } from '@/env';
-import { db } from '@/server/db';
+import { sendVerificationEmail } from '@/utils/resend';
+import { PsqlAdapter } from '@/utils/psql-adapter';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -46,11 +40,16 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: PrismaAdapter(db) as Adapter,
+  adapter: PsqlAdapter(),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    EmailProvider({
+      sendVerificationRequest: async (params: SendVerificationRequestParams) => {
+        const { identifier, url } = params;
+        await sendVerificationEmail({
+          url,
+          email: identifier,
+        });
+      }
     }),
     /**
      * ...add more providers here.
