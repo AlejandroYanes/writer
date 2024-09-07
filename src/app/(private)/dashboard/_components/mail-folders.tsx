@@ -1,13 +1,13 @@
 import {
   AlertCircle,
-  Archive,
+  Archive, ArchiveIcon,
   ArchiveX,
-  File,
+  File, FolderIcon,
   Inbox,
   MessagesSquare,
   Send,
-  ShoppingCart,
-  Trash2,
+  ShoppingCart, StarIcon,
+  Trash2, Trash2Icon,
   Users2,
 } from 'lucide-react';
 import * as React from 'react';
@@ -35,39 +35,21 @@ export default function MailFolders(props: Props) {
       <Nav
         links={[
           {
-            title: 'Inbox',
+            title: 'Starred',
             label: '128',
-            icon: Inbox,
+            icon: StarIcon,
             variant: 'default',
           },
           {
-            title: 'Drafts',
-            label: '9',
-            icon: File,
-            variant: 'ghost',
-          },
-          {
-            title: 'Sent',
-            label: '',
-            icon: Send,
-            variant: 'ghost',
-          },
-          {
-            title: 'Junk',
-            label: '23',
-            icon: ArchiveX,
-            variant: 'ghost',
-          },
-          {
-            title: 'Trash',
-            label: '',
-            icon: Trash2,
-            variant: 'ghost',
-          },
-          {
             title: 'Archive',
+            label: '9',
+            icon: ArchiveIcon,
+            variant: 'ghost',
+          },
+          {
+            title: 'Deleted',
             label: '',
-            icon: Archive,
+            icon: Trash2Icon,
             variant: 'ghost',
           },
         ]}
@@ -76,33 +58,39 @@ export default function MailFolders(props: Props) {
       <Nav
         links={[
           {
-            title: 'Social',
+            title: 'All Notes',
             label: '972',
-            icon: Users2,
+            icon: FolderIcon,
             variant: 'ghost',
           },
           {
-            title: 'Updates',
+            title: 'Articles',
             label: '342',
-            icon: AlertCircle,
+            icon: FolderIcon,
             variant: 'ghost',
           },
           {
-            title: 'Forums',
+            title: 'Recipes',
             label: '128',
-            icon: MessagesSquare,
+            icon: FolderIcon,
             variant: 'ghost',
           },
           {
-            title: 'Shopping',
+            title: 'Inspiration',
             label: '8',
-            icon: ShoppingCart,
+            icon: FolderIcon,
             variant: 'ghost',
           },
           {
-            title: 'Promotions',
+            title: 'Workouts',
             label: '21',
-            icon: Archive,
+            icon: FolderIcon,
+            variant: 'ghost',
+          },
+          {
+            title: 'Content ideas',
+            label: '5',
+            icon: FolderIcon,
             variant: 'ghost',
           },
         ]}

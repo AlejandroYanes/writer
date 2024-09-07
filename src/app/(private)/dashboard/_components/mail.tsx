@@ -2,11 +2,11 @@
 
 import { type ReactNode, useState } from 'react';
 
+import { TooltipProvider } from '@/ui';
 import { type Mail } from '../data';
 import { MailDisplay } from './mail-display';
-import { TooltipProvider } from '@/ui';
-import MailLists from '@/app/(private)/dashboard/_components/mail-lists';
-import MailFolders from '@/app/(private)/dashboard/_components/mail-folders';
+import MailLists from './mail-lists';
+import MailFolders from './mail-folders';
 
 interface MailProps {
   accounts: {
@@ -24,8 +24,6 @@ export function Mail(props: MailProps) {
   const handleEmailSelected = (id: string) => {
     setMail(id);
   };
-
-  console.log(mails.find((item) => item.id === mail));
 
   return (
     <TooltipProvider delayDuration={0}>
