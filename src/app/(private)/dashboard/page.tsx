@@ -1,7 +1,11 @@
-export default function DashboardPage() {
+import { cookies } from 'next/headers';
+import Image from 'next/image';
+
+import { Mail } from './_components/mail';
+import { accounts, mails } from './data';
+
+export default function MailPage() {
   return (
-    <main className="w-screen h-screen flex flex-col items-center justify-center">
-      Welcome to the Writer Dashboard!
-    </main>
-  );
+    <Mail accounts={accounts} mails={mails}/>
+  )
 }

@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 
 import { getServerAuthSession } from '@/server/auth';
-import { AppLayout } from '@/components/app-layout';
 import ClientProviders from '@/components/client-providers';
 
 export default async function RootLayout({
@@ -17,9 +16,7 @@ export default async function RootLayout({
 
   return (
     <ClientProviders session={session}>
-      <AppLayout session={session}>
-        {children}
-      </AppLayout>
+      {children}
     </ClientProviders>
   );
 }
