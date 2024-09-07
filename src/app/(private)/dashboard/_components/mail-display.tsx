@@ -29,7 +29,7 @@ interface MailDisplayProps {
 }
 
 export function MailDisplay({ mail }: MailDisplayProps) {
-  const today = new Date()
+  const today = new Date();
 
   return (
     <div className="flex h-screen flex-col flex-1">

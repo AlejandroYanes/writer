@@ -7,10 +7,12 @@ import { MailList } from './mail-list';
 
 interface Props {
   mails: Mail[];
+  selected: string | null;
+  onSelected: (mailId: string) => void;
 }
 
 export default function MailLists(props: Props) {
-  const { mails } = props;
+  const { mails, selected, onSelected } = props;
   return (
     <div className="border-r w-1/4 shrink-0">
       <Tabs defaultValue="all">
@@ -41,10 +43,10 @@ export default function MailLists(props: Props) {
           </form>
         </div>
         <TabsContent value="all" className="m-0">
-          <MailList items={mails} />
+          <MailList items={mails} selected={selected} onSelected={onSelected} />
         </TabsContent>
         <TabsContent value="unread" className="m-0">
-          <MailList items={mails.filter((item) => !item.read)} />
+          <MailList items={mails.filter((item) => !item.read)} selected={selected} onSelected={onSelected} />
         </TabsContent>
       </Tabs>
     </div>
