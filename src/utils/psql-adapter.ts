@@ -7,7 +7,7 @@ export function PsqlAdapter(): Adapter {
   return {
     createUser: async (data) => {
       const response = await sql<{ id: string; email: string; email_verified: string | null; name: string; image: string }>`
-        INSERT INTO user (id, name, email, image, email_verified)
+        INSERT INTO users (id, name, email, image, email_verified)
         VALUES (${nanoid()}, ${data.name}, ${data.email}, ${data.image}, ${data.emailVerified ? data.emailVerified.toDateString() : null})
         RETURNING id, email, email_verified, name, image`;
 
@@ -23,7 +23,7 @@ export function PsqlAdapter(): Adapter {
     },
     getUser: async (id) => {
       const response = await sql<{ id: string; email: string; email_verified: string | null; name: string; image: string }>`
-        SELECT id, email, email_verified, name, image FROM user WHERE id = ${id}`;
+        SELECT id, email, email_verified, name, image FROM users WHERE id = ${id}`;
 
       const user = response.rows[0];
 
@@ -41,7 +41,7 @@ export function PsqlAdapter(): Adapter {
     },
     getUserByEmail: async (email) => {
       const response = await sql<{ id: string; email: string; email_verified: string | null; name: string; image: string }>`
-        SELECT id, email, email_verified, name, image FROM user WHERE email = ${email}`;
+        SELECT id, email, email_verified, name, image FROM users WHERE email = ${email}`;
 
       const user = response.rows[0];
 
@@ -60,7 +60,7 @@ export function PsqlAdapter(): Adapter {
     getUserByAccount: async (provider) => {
       const response = await sql<{ id: string; email: string; email_verified: string; name: string; image: string }>`
           SELECT US.id, US.name, US.email, US.image, US.email_verified
-          FROM user US INNER JOIN account AC ON US.id = AC.user_id
+          FROM users US INNER JOIN accounts AC ON US.id = AC.user_id
           WHERE AC.provider_account_id = ${provider.providerAccountId} AND AC.provider = ${provider.provider}`;
 
       const user = response.rows[0];
@@ -79,7 +79,7 @@ export function PsqlAdapter(): Adapter {
     },
     updateUser: async ({ id, ...data }) => {
       const response = await sql<{ id: string; email: string; email_verified: string; name: string; image: string }>`
-        UPDATE user SET
+        UPDATE users SET
           name = ${data.name},
           email = ${data.email},
           image = ${data.image},
@@ -98,7 +98,7 @@ export function PsqlAdapter(): Adapter {
       };
     },
     deleteUser: async (id) => {
-      await sql`DELETE FROM user WHERE id = ${id}`;
+      await sql`DELETE FROM users WHERE id = ${id}`;
     },
     linkAccount: async (data) => {
       await sql<{
@@ -111,20 +111,14 @@ export function PsqlAdapter(): Adapter {
         access_token: string;
         expires_at: string;
       }>`
-        INSERT INTO account (id, type, provider, provider_account_id, user_id, refresh_token, access_token, expires_at)
+        INSERT INTO accounts (id, type, provider, provider_account_id, user_id, refresh_token, access_token, expires_at)
         VALUES (${nanoid()}, ${data.type}, ${data.provider}, ${data.providerAccountId}, ${data.userId}, ${data.refresh_token}, ${data.access_token}, ${data.expires_at})`;
     },
     unlinkAccount: async (data) => {
-      await sql`DELETE FROM account WHERE provider = ${data.provider} AND provider_account_id = ${data.providerAccountId}`;
+      await sql`DELETE FROM accounts WHERE provider = ${data.provider} AND provider_account_id = ${data.providerAccountId}`;
     },
     getSessionAndUser: async (sessionToken) => {
-      const sessionQuery = await sql`
-        SELECT US.id, US.name, US.email, US.image, US.email_verified, SE.expires, SE.session_token
-        FROM user US
-          INNER JOIN session SE ON US.id = SE.user_id
-        WHERE SE.session_token = ${sessionToken}`;
-
-      const userAndSession = sessionQuery.rows[0] as {
+      const sessionQuery = await sql<{
         id: string;
         name: string;
         email: string;
@@ -132,7 +126,13 @@ export function PsqlAdapter(): Adapter {
         image: string | null;
         expires: string;
         session_token: string;
-      } | null;
+      }>`
+        SELECT US.id, US.name, US.email, US.image, US.email_verified, SE.expires, SE.session_token
+        FROM users US
+          INNER JOIN sessions SE ON US.id = SE.user_id
+        WHERE SE.session_token = ${sessionToken}`;
+
+      const userAndSession = sessionQuery.rows[0];
 
       if (!userAndSession) {
         return null;
@@ -159,7 +159,7 @@ export function PsqlAdapter(): Adapter {
     },
     createSession: async (data) => {
       const response = await sql<{ session_token: string; user_id: string; expires: string }>`
-        INSERT INTO session (id, session_token, user_id, expires)
+        INSERT INTO sessions (id, session_token, user_id, expires)
         VALUES (${nanoid()}, ${data.sessionToken}, ${data.userId}, ${data.expires.toDateString()})
         RETURNING session_token, user_id, expires`;
 
@@ -168,7 +168,7 @@ export function PsqlAdapter(): Adapter {
     },
     updateSession: async (data) => {
       const response = await sql<{ session_token: string; user_id: string; expires: string }>`
-        UPDATE session SET expires = ${data.expires ? data.expires.toDateString() : null}
+        UPDATE sessions SET expires = ${data.expires ? data.expires.toDateString() : null}
         WHERE session_token = ${data.sessionToken}
         RETURNING session_token, user_id, expires`;
 
@@ -177,19 +177,18 @@ export function PsqlAdapter(): Adapter {
     },
     deleteSession: async (sessionToken) => {
       const client = await sql.connect();
-      await client.sql`SELECT * FROM session WHERE session_token = ${sessionToken}`;
-      await client.sql`DELETE FROM session WHERE session_token = ${sessionToken}`;
+      await client.sql`SELECT * FROM sessions WHERE session_token = ${sessionToken}`;
+      await client.sql`DELETE FROM sessions WHERE session_token = ${sessionToken}`;
     },
     createVerificationToken: async (data) => {
       const response = await sql<{ id: string; token: string; identifier: string; expires: string }>`
-        INSERT INTO verification_token (id, token, identifier, expires)
-        VALUES (${nanoid()}, ${data.token}, ${data.identifier}, ${data.expires.toDateString()})
-        RETURNING id, token, identifier, expires`;
+        INSERT INTO verification_tokens (token, identifier, expires)
+        VALUES (${data.token}, ${data.identifier}, ${data.expires.toDateString()})
+        RETURNING token, identifier, expires`;
 
       const verificationToken = response.rows[0]!;
 
       return {
-        id: verificationToken.id,
         token: verificationToken.token,
         identifier: verificationToken.identifier,
         expires: new Date(verificationToken.expires),
@@ -199,7 +198,7 @@ export function PsqlAdapter(): Adapter {
       const client = await sql.connect();
       const verificationToken = (
         await client.sql<{ token: string; identifier: string; expires: Date }>`
-          SELECT token, identifier, expires FROM verification_token
+          SELECT token, identifier, expires FROM verification_tokens
           WHERE token = ${data.token} AND identifier = ${data.identifier}`
       ).rows[0];
 
@@ -208,7 +207,7 @@ export function PsqlAdapter(): Adapter {
         return null;
       }
 
-      await client.sql`DELETE FROM verification_token WHERE token = ${data.token} AND identifier = ${data.identifier}`;
+      await client.sql`DELETE FROM verification_tokens WHERE token = ${data.token} AND identifier = ${data.identifier}`;
 
       return verificationToken;
     },

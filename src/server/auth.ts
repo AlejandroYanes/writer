@@ -1,8 +1,8 @@
 import { type DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth';
 import EmailProvider, { type SendVerificationRequestParams } from 'next-auth/providers/email';
 
-import { sendVerificationEmail } from '@/utils/resend';
 import { PsqlAdapter } from '@/utils/psql-adapter';
+import { sendVerificationEmail } from '@/utils/resend';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -32,13 +32,21 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: ({ session, user }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+        },
+      };
+    },
+  },
+  pages: {
+    signIn: '/dashboard',
+    verifyRequest: '/verify-email',
+    error: '/?sign-in-error=true',
+    newUser: '/onboarding',
   },
   adapter: PsqlAdapter(),
   providers: [

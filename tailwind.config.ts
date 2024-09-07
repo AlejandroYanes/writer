@@ -2,8 +2,7 @@
 const config = {
   darkMode: ['class'],
   content: [
-    '../../apps/**/*.{ts,tsx}',
-    '../../packages/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
   ],
   theme: {
     transparent: 'transparent',
