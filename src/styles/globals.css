@@ -65,20 +65,40 @@
 .tiptap {
   @apply outline-0 py-8 px-6 overflow-y-auto;
 
+  & > * {
+    @apply max-w-[700px] mx-auto;
+  }
+
   :first-child {
     margin-top: 0;
   }
 
-  /* List styles */
-  ul,
-  ol {
-    padding: 0 1rem;
-    margin: 1.25rem 1rem 1.25rem 0.4rem;
-
+  ol, ul {
     li p {
       margin-top: 0.25em;
       margin-bottom: 0.25em;
     }
+  }
+
+  /* List styles */
+  ul {
+    @apply list-disc;
+    padding: 0 1rem;
+    /*margin: 1.25rem 1rem 1.25rem 0.4rem;*/
+  }
+
+  ol {
+    @apply list-decimal;
+    padding: 0 1rem 0 2rem;
+    /*margin: 1.25rem 1rem 1.25rem 0.4rem;*/
+  }
+
+  ul {
+    @apply list-disc;
+  }
+
+  ol {
+    @apply list-decimal;
   }
 
   /* Heading styles */
@@ -119,17 +139,15 @@
 
   /* Code and preformatted text styles */
   code {
-    @apply bg-purple-200;
+    @apply bg-purple-200 text-neutral-900;
     border-radius: 0.4rem;
-    @apply text-neutral-900;
     font-size: 0.85rem;
     padding: 0.25em 0.3em;
   }
 
   pre {
-    @apply bg-neutral-900;
+    @apply bg-neutral-900 text-white;
     border-radius: 0.5rem;
-    @apply text-white;
     font-family: 'JetBrainsMono', monospace;
     margin: 1.5rem 0;
     padding: 0.75rem 1rem;
@@ -150,8 +168,7 @@
   }
 
   blockquote {
-    @apply border-0;
-    @apply border-l-4 border-neutral-300;
+    @apply border-0 border-l-4 border-neutral-300;
     margin: 1.5rem 0;
     padding-left: 1rem;
   }

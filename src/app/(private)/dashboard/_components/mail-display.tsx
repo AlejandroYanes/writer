@@ -1,177 +1,380 @@
-import { addDays, addHours, format, nextSaturday } from 'date-fns';
-import { Archive, ArchiveX, Clock, Forward, MoreVertical, Reply, ReplyAll, Trash2 } from 'lucide-react';
+import {
+  AlignCenterIcon,
+  AlignJustifyIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+  BaselineIcon,
+  BoldIcon,
+  Heading1Icon,
+  Heading2Icon,
+  Heading3Icon,
+  Heading4Icon,
+  ItalicIcon,
+  StrikethroughIcon,
+} from 'lucide-react';
+import StarterKit from '@tiptap/starter-kit';
+import Highlight from '@tiptap/extension-highlight';
+import Typography from '@tiptap/extension-typography';
+import TextAlign from '@tiptap/extension-text-align';
+import { EditorContent, useEditor } from '@tiptap/react';
 
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
   Button,
-  Calendar,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  Label,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+  cn,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Separator,
-  Switch,
-  Textarea,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/ui';
 import type { Mail } from '../data';
-import Tiptap from '@/components/tiptap';
 
 interface MailDisplayProps {
   mail: Mail | null;
 }
 
+const extensions = [
+  StarterKit,
+  Highlight,
+  Typography,
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+  }),
+];
+
+const content =  `
+    <p>
+      Markdown shortcuts make it easy to format the text while typing.
+    </p>
+    <p>
+      To test that, start a new line and type <code>#</code> followed by a space to get a heading. Try <code>#</code>, <code>##</code>, <code>###</code>, <code>####</code>, <code>#####</code>, <code>######</code> for different levels.
+    </p>
+    <p>
+      Those conventions are called input rules in Tiptap. Some of them are enabled by default. Try <code>></code> for blockquotes, <code>*</code>, <code>-</code> or <code>+</code> for bullet lists, or <code>\`foobar\`</code> to highlight code, <code>~~tildes~~</code> to strike text, or <code>==equal signs==</code> to highlight text.
+    </p>
+    <p>
+      You can overwrite existing input rules or add your own to nodes, marks and extensions.
+    </p>
+    <p>
+      For example, we added the <code>Typography</code> extension here. Try typing <code>(c)</code> to see how it’s converted to a proper © character. You can also try <code>-></code>, <code>>></code>, <code>1/2</code>, <code>!=</code>, or <code>--</code>.
+    </p>
+    <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Diam etiam libero bibendum viverra class proin iaculis nam. Mauris massa fames molestie pharetra justo phasellus amet massa scelerisque. Netus dignissim lobortis lacus efficitur, fringilla neque at elit. Laoreet aliquet tellus euismod ullamcorper rutrum pretium enim maximus. Auctor quisque ante pharetra velit interdum, hac inceptos curae. Viverra nulla facilisis pharetra sodales taciti suspendisse suspendisse. Dolor volutpat eros eget cras orci blandit. Viverra in blandit at per egestas.</p>
+    <p>Litora bibendum primis; semper sem volutpat eget fusce. Mauris ut nam senectus aenean montes dictumst placerat nisi. Nibh nunc aliquet nec netus auctor ex taciti. Primis dictum parturient maximus laoreet imperdiet tortor hac. Nulla curae vel lectus lectus quis, per proin torquent. Eu lacus erat posuere id velit varius senectus aliquam ridiculus. Ridiculus felis sollicitudin lorem habitasse senectus etiam consequat purus porttitor. Molestie dictumst venenatis litora hendrerit dignissim praesent est. Nisl mi vel risus primis maximus ipsum.</p>
+    <p>Vehicula per taciti est iaculis, tincidunt mus luctus. Tempor tortor fames consectetur rutrum parturient. Curabitur quis eu class porta morbi quisque fames. Cubilia hac nunc nascetur, congue himenaeos eget etiam in. Ipsum lorem nostra luctus suspendisse nullam condimentum ut. Luctus nisl a porttitor faucibus laoreet. Faucibus id sapien sollicitudin tempor pharetra magnis a luctus vulputate. Phasellus pharetra pulvinar velit quis nascetur in nulla molestie penatibus. Nisi porta sollicitudin taciti hendrerit porta interdum placerat justo? Hendrerit in ornare justo netus in interdum luctus ante.</p>
+    <p>Ultrices dictum pretium feugiat; senectus pretium felis. Arcu vestibulum venenatis molestie interdum torquent sagittis posuere nisi. Bibendum vestibulum praesent etiam dictumst, amet porta feugiat. Facilisi ornare a arcu aenean mollis duis interdum. Facilisis massa dignissim hendrerit maecenas taciti. Luctus convallis eu penatibus ante nibh, quis blandit. Accumsan felis iaculis; blandit morbi habitant a efficitur condimentum. Venenatis maximus aptent nostra neque ante augue penatibus arcu nec. Ac penatibus a tempor eros pellentesque justo a montes litora.</p>
+    <p>Commodo montes curae curae facilisi in erat penatibus. Viverra vulputate aliquet iaculis massa turpis quam ex. Tincidunt nam ut sapien nec curae curae. Phasellus sed fringilla nostra magna odio libero netus tincidunt. Mi iaculis enim ligula id hendrerit elementum convallis. Cras montes fringilla libero quis porta aenean quisque nibh varius. Mauris senectus accumsan mollis integer conubia dis. Accumsan duis hendrerit placerat eros tellus quisque non nulla. Tellus odio primis non conubia, maximus phasellus mus.</p>
+    `;
+
 export function MailDisplay({ mail }: MailDisplayProps) {
-  const today = new Date();
+  const editor = useEditor({
+    extensions,
+    content,
+    editorProps: { attributes: { class: 'h-[calc(100vh_-_56px)] mx-auto' } }
+  });
 
   return (
     <div className="flex h-screen flex-col flex-1">
-      <div className="flex items-center p-2">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Archive className="h-4 w-4" />
-                <span className="sr-only">Archive</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Archive</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <ArchiveX className="h-4 w-4" />
-                <span className="sr-only">Move to junk</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to junk</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Move to trash</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to trash</TooltipContent>
-          </Tooltip>
-          <Separator orientation="vertical" className="mx-1 h-6" />
-          <Tooltip>
-            <Popover>
-              <PopoverTrigger asChild>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" disabled={!mail}>
-                    <Clock className="h-4 w-4" />
-                    <span className="sr-only">Snooze</span>
-                  </Button>
-                </TooltipTrigger>
-              </PopoverTrigger>
-              <PopoverContent className="flex w-[535px] p-0">
-                <div className="flex flex-col gap-2 border-r px-2 py-4">
-                  <div className="px-4 text-sm font-medium">Snooze until</div>
-                  <div className="grid min-w-[250px] gap-1">
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      Later today{' '}
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addHours(today, 4), 'E, h:m b')}
-                      </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      Tomorrow
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 1), 'E, h:m b')}
-                      </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      This weekend
-                      <span className="ml-auto text-muted-foreground">
-                        {format(nextSaturday(today), 'E, h:m b')}
-                      </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      Next week
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 7), 'E, h:m b')}
-                      </span>
-                    </Button>
-                  </div>
-                </div>
-                <div className="p-2">
-                  <Calendar />
-                </div>
-              </PopoverContent>
-            </Popover>
-            <TooltipContent>Snooze</TooltipContent>
-          </Tooltip>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Reply className="h-4 w-4" />
-                <span className="sr-only">Reply</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Reply</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <ReplyAll className="h-4 w-4" />
-                <span className="sr-only">Reply all</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Reply all</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Forward className="h-4 w-4" />
-                <span className="sr-only">Forward</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Forward</TooltipContent>
-          </Tooltip>
-        </div>
-        <Separator orientation="vertical" className="mx-2 h-6" />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" disabled={!mail}>
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">More</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Mark as unread</DropdownMenuItem>
-            <DropdownMenuItem>Star thread</DropdownMenuItem>
-            <DropdownMenuItem>Add label</DropdownMenuItem>
-            <DropdownMenuItem>Mute thread</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <Separator />
+      <div className="flex items-center p-2 gap-1">
+        <Select>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Select a font" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="arial">Arial</SelectItem>
+            <SelectItem value="arial-black">Arial Black</SelectItem>
+            <SelectItem value="times-new-roman">Times new Roman</SelectItem>
+          </SelectContent>
+        </Select>
 
-      <Tiptap className="h-[calc(100vh_-_56px)]" />
+        <Separator orientation="vertical" className="mx-2 h-6"/>
+
+        <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 1 }) ? 'border' : '')}
+          >
+            <Heading1Icon className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 2 }) ? 'border' : '')}
+          >
+            <Heading2Icon className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 3 }) ? 'border' : '')}
+          >
+            <Heading3Icon className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 4 }).run()}
+            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 4 }) ? 'border' : '')}
+          >
+            <Heading4Icon className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => editor?.chain().focus().setParagraph().run()}
+            className={cn('w-10 shrink-0', editor?.isActive('paragraph') ? 'border' : '')}
+          >
+            <BaselineIcon className="h-5 w-5" />
+          </Button>
+        </div>
+
+        <Separator orientation="vertical" className="mx-2 h-6"/>
+
+        <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleBold().run()}
+                className={editor?.isActive('bold') ? 'border' : ''}
+              >
+                <BoldIcon className="h-4 w-4"/>
+                <span className="sr-only">Bold</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Bold</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleItalic().run()}
+                className={editor?.isActive('italic') ? 'border' : ''}
+              >
+                <ItalicIcon className="h-4 w-4"/>
+                <span className="sr-only">Italic</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Italic</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleStrike().run()}
+                className={editor?.isActive('strike') ? 'border' : ''}
+              >
+                <StrikethroughIcon className="h-4 w-4"/>
+                <span className="sr-only">Strikethrough</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Strikethrough</TooltipContent>
+          </Tooltip>
+        </div>
+
+        <Separator orientation="vertical" className="mx-2 h-6"/>
+
+        <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+                className={editor?.isActive({ textAlign: 'left' }) ? 'border' : ''}
+              >
+                <AlignLeftIcon className="h-4 w-4"/>
+                <span className="sr-only">Align left</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Align left</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+                className={editor?.isActive({ textAlign: 'center' }) ? 'border' : ''}
+              >
+                <AlignCenterIcon className="h-4 w-4"/>
+                <span className="sr-only">Align center</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Align center</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+                className={editor?.isActive({ textAlign: 'right' }) ? 'border' : ''}
+              >
+                <AlignRightIcon className="h-4 w-4"/>
+                <span className="sr-only">Align right</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Align right</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().setTextAlign('justify').run()}
+                className={editor?.isActive({ textAlign: 'justify' }) ? 'border' : ''}
+              >
+                <AlignJustifyIcon className="h-4 w-4"/>
+                <span className="sr-only">Align justify</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Align justify</TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
+
+      <Separator/>
+
+      <EditorContent editor={editor} />
     </div>
   )
 }
+
+// TODO: code for the bubble menu in the future
+// {editor && (
+//   <BubbleMenu
+//     className="p-1 flex flex-row items-center gap-1 bg-white border rounded shadow-sm overflow-x-auto max-w-lg"
+//     tippyOptions={{ duration: 100 }}
+//     editor={editor}
+//   >
+//     <Button
+//       variant="ghost"
+//       size="icon"
+//       onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 1 }) ? 'border' : '')}
+//     >
+//       <Heading1Icon className="h-5 w-5" />
+//     </Button>
+//     <Button
+//       variant="ghost"
+//       size="icon"
+//       onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 2 }) ? 'border' : '')}
+//     >
+//       <Heading2Icon className="h-5 w-5" />
+//     </Button>
+//     <Button
+//       variant="ghost"
+//       size="icon"
+//       onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 3 }) ? 'border' : '')}
+//     >
+//       <Heading3Icon className="h-5 w-5" />
+//     </Button>
+//     <Button
+//       variant="ghost"
+//       size="icon"
+//       onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 4 }) ? 'border' : '')}
+//     >
+//       <Heading4Icon className="h-5 w-5" />
+//     </Button>
+//
+//     <Separator orientation="vertical" className="mx-2 h-6"/>
+//
+//     <Button
+//       variant="ghost"
+//       size="icon"
+//       onClick={() => editor.chain().focus().toggleBold().run()}
+//       className={cn('w-10 shrink-0', editor?.isActive('bold') ? 'border' : '')}
+//     >
+//       <BoldIcon className="h-4 w-4" />
+//     </Button>
+//     <Button
+//       variant="ghost"
+//       size="icon"
+//       onClick={() => editor.chain().focus().toggleItalic().run()}
+//       className={cn('w-10 shrink-0', editor?.isActive('italic') ? 'border' : '')}
+//     >
+//       <ItalicIcon className="h-4 w-4" />
+//     </Button>
+//     <Button
+//       variant="ghost"
+//       size="icon"
+//       onClick={() => editor.chain().focus().toggleStrike().run()}
+//       className={cn('w-10 shrink-0', editor?.isActive('strike') ? 'border' : '')}
+//     >
+//       <StrikethroughIcon className="h-4 w-4" />
+//     </Button>
+//
+//     <Separator orientation="vertical" className="mx-2 h-6"/>
+//
+//     <Tooltip>
+//       <TooltipTrigger asChild>
+//         <Button
+//           variant="ghost"
+//           size="icon"
+//           onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'left' }) ? 'border' : '')}
+//         >
+//           <AlignLeftIcon className="h-4 w-4"/>
+//           <span className="sr-only">Align left</span>
+//         </Button>
+//       </TooltipTrigger>
+//       <TooltipContent>Align left</TooltipContent>
+//     </Tooltip>
+//     <Tooltip>
+//       <TooltipTrigger asChild>
+//         <Button
+//           variant="ghost"
+//           size="icon"
+//           onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'center' }) ? 'border' : '')}
+//         >
+//           <AlignCenterIcon className="h-4 w-4"/>
+//           <span className="sr-only">Align center</span>
+//         </Button>
+//       </TooltipTrigger>
+//       <TooltipContent>Align center</TooltipContent>
+//     </Tooltip>
+//     <Tooltip>
+//       <TooltipTrigger asChild>
+//         <Button
+//           variant="ghost"
+//           size="icon"
+//           onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'right' }) ? 'border' : '')}
+//         >
+//           <AlignRightIcon className="h-4 w-4"/>
+//           <span className="sr-only">Align right</span>
+//         </Button>
+//       </TooltipTrigger>
+//       <TooltipContent>Align right</TooltipContent>
+//     </Tooltip>
+//     <Tooltip>
+//       <TooltipTrigger asChild>
+//         <Button
+//           variant="ghost"
+//           size="icon"
+//           onClick={() => editor?.chain().focus().setTextAlign('justify').run()}
+//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'justify' }) ? 'border' : '')}
+//         >
+//           <AlignJustifyIcon className="h-4 w-4"/>
+//           <span className="sr-only">Align justify</span>
+//         </Button>
+//       </TooltipTrigger>
+//       <TooltipContent>Align justify</TooltipContent>
+//     </Tooltip>
+//   </BubbleMenu>
+// )}

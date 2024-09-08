@@ -42,6 +42,7 @@
     "@t3-oss/env-nextjs": "0.10.1",
     "@tanstack/react-query": "5.55.0",
     "@tiptap/extension-highlight": "2.6.6",
+    "@tiptap/extension-text-align": "2.6.6",
     "@tiptap/extension-typography": "2.6.6",
     "@tiptap/pm": "2.6.6",
     "@tiptap/react": "2.6.6",

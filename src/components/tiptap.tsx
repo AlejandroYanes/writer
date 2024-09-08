@@ -10,7 +10,7 @@ interface Props {
   slotBefore?: React.ReactNode;
 }
 
-const extentions = [
+const extensions = [
   StarterKit,
   Highlight,
   Typography,
@@ -44,7 +44,7 @@ const Tiptap = (props: Props) => {
 
   return (
     <EditorProvider
-      extensions={extentions}
+      extensions={extensions}
       slotBefore={slotBefore}
       content={content}
       editorProps={{ attributes: { ...(className ? { class: className } : {}) } }}
