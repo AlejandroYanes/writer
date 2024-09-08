@@ -9,28 +9,21 @@ import {
   Heading2Icon,
   Heading3Icon,
   Heading4Icon,
-  ItalicIcon,
+  ItalicIcon, LayoutListIcon,
+  ListIcon,
+  ListOrderedIcon,
   StrikethroughIcon,
 } from 'lucide-react';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import Typography from '@tiptap/extension-typography';
 import TextAlign from '@tiptap/extension-text-align';
+import Document from '@tiptap/extension-document'
+import TaskItem from '@tiptap/extension-task-item'
+import TaskList from '@tiptap/extension-task-list'
 import { EditorContent, useEditor } from '@tiptap/react';
 
-import {
-  Button,
-  cn,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Separator,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui';
+import { Button, cn, Separator, Tooltip, TooltipContent, TooltipTrigger } from '@/ui';
 import type { Mail } from '../data';
 
 interface MailDisplayProps {
@@ -44,6 +37,8 @@ const extensions = [
   TextAlign.configure({
     types: ['heading', 'paragraph'],
   }),
+  TaskList,
+  TaskItem,
 ];
 
 const content =  `
@@ -73,24 +68,25 @@ export function MailDisplay({ mail }: MailDisplayProps) {
   const editor = useEditor({
     extensions,
     content,
-    editorProps: { attributes: { class: 'h-[calc(100vh_-_56px)] mx-auto' } }
+    editorProps: { attributes: { class: 'h-[calc(100vh_-_56px)] mx-auto' } },
+    immediatelyRender: false,
   });
 
   return (
     <div className="flex h-screen flex-col flex-1">
       <div className="flex items-center p-2 gap-1">
-        <Select>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Select a font" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="arial">Arial</SelectItem>
-            <SelectItem value="arial-black">Arial Black</SelectItem>
-            <SelectItem value="times-new-roman">Times new Roman</SelectItem>
-          </SelectContent>
-        </Select>
+        {/*<Select>*/}
+        {/*  <SelectTrigger className="w-48">*/}
+        {/*    <SelectValue placeholder="Select a font" />*/}
+        {/*  </SelectTrigger>*/}
+        {/*  <SelectContent>*/}
+        {/*    <SelectItem value="arial">Arial</SelectItem>*/}
+        {/*    <SelectItem value="arial-black">Arial Black</SelectItem>*/}
+        {/*    <SelectItem value="times-new-roman">Times new Roman</SelectItem>*/}
+        {/*  </SelectContent>*/}
+        {/*</Select>*/}
 
-        <Separator orientation="vertical" className="mx-2 h-6"/>
+        {/*<Separator orientation="vertical" className="mx-2 h-6"/>*/}
 
         <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
           <Button
@@ -240,6 +236,53 @@ export function MailDisplay({ mail }: MailDisplayProps) {
               </Button>
             </TooltipTrigger>
             <TooltipContent>Align justify</TooltipContent>
+          </Tooltip>
+        </div>
+
+        <Separator orientation="vertical" className="mx-2 h-6"/>
+
+        <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                className={editor?.isActive('bulletList') ? 'border' : ''}
+              >
+                <ListIcon className="h-5 w-5"/>
+                <span className="sr-only">Bullet list</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Bullet list</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+                className={editor?.isActive('orderedList') ? 'border' : ''}
+              >
+                <ListOrderedIcon className="h-5 w-5"/>
+                <span className="sr-only">Number list</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Number list</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleTaskList().run()}
+                className={editor?.isActive('taskList') ? 'border' : ''}
+              >
+                <LayoutListIcon className="h-5 w-5"/>
+                <span className="sr-only">Task list</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Task list</TooltipContent>
           </Tooltip>
         </div>
       </div>
