@@ -66,9 +66,11 @@ model documents {
   is_archived Boolean @default(false)
   is_deleted  Boolean @default(false)
   folder_id   Int
+  user_id     String
 }
 
 model folders {
-  id   Int    @id @default(autoincrement())
-  name String
+  id      Int    @id @default(autoincrement())
+  name    String
+  user_id String
 }

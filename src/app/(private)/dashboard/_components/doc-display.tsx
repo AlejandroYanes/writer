@@ -12,7 +12,7 @@ import {
   LayoutListIcon,
   ListIcon,
   ListOrderedIcon,
-  StrikethroughIcon,
+  StrikethroughIcon, Trash2Icon,
   TypeIcon,
 } from 'lucide-react';
 import StarterKit from '@tiptap/starter-kit';
@@ -70,19 +70,6 @@ export default function DocumentDisplay() {
   return (
     <div className="flex h-screen flex-col flex-1">
       <div className="flex items-center p-2 gap-1">
-        {/*<Select>*/}
-        {/*  <SelectTrigger className="w-48">*/}
-        {/*    <SelectValue placeholder="Select a font" />*/}
-        {/*  </SelectTrigger>*/}
-        {/*  <SelectContent>*/}
-        {/*    <SelectItem value="arial">Arial</SelectItem>*/}
-        {/*    <SelectItem value="arial-black">Arial Black</SelectItem>*/}
-        {/*    <SelectItem value="times-new-roman">Times new Roman</SelectItem>*/}
-        {/*  </SelectContent>*/}
-        {/*</Select>*/}
-
-        {/*<Separator orientation="vertical" className="mx-2 h-6"/>*/}
-
         <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -313,6 +300,20 @@ export default function DocumentDisplay() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>Task list</TooltipContent>
+          </Tooltip>
+        </div>
+
+        <Separator orientation="vertical" className="mr-2 ml-auto h-6"/>
+
+        <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Trash2Icon className="h-4 w-4" />
+                <span className="sr-only">Move to trash</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Move to trash</TooltipContent>
           </Tooltip>
         </div>
       </div>

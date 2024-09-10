@@ -14,7 +14,7 @@ export default function MailPage() {
   const handleEmailSelected = (id: string) => {
     setMail(id);
   };
-  
+
   return (
     <TooltipProvider delayDuration={0}>
       <div className="h-screen flex items-stretch">

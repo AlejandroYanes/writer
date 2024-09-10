@@ -15,7 +15,7 @@ export default function DocLists(props: Props) {
   const { mails, selected, onSelected } = props;
   return (
     <div className="border-r w-1/4 shrink-0">
-      <div className="flex items-center justify-between px-4 py-2 h-[56px]">
+      <div className="flex items-center justify-end px-4 py-2 h-[56px]">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -24,15 +24,6 @@ export default function DocLists(props: Props) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>Start new article</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Trash2Icon className="h-4 w-4" />
-              <span className="sr-only">Move to trash</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Move to trash</TooltipContent>
         </Tooltip>
       </div>
       <Separator/>
