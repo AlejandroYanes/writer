@@ -10,7 +10,7 @@ interface MailListProps {
   onSelected: (mailId: string) => void;
 }
 
-export function MailList({ items, selected, onSelected }: MailListProps) {
+export function DocList({ items, selected, onSelected }: MailListProps) {
   return (
     <ScrollArea className="h-[calc(100vh_-_128px)]">
       <div className="flex flex-col gap-2 p-4 pt-0">

@@ -56,3 +56,19 @@ model verification_tokens {
 
   @@unique([identifier, token])
 }
+
+model documents {
+  id          Int     @id @default(autoincrement())
+  title       String?
+  sub_title   String?
+  content_url String?
+  starred     Boolean @default(false)
+  is_archived Boolean @default(false)
+  is_deleted  Boolean @default(false)
+  folder_id   Int
+}
+
+model folders {
+  id   Int    @id @default(autoincrement())
+  name String
+}

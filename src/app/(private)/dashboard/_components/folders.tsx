@@ -1,18 +1,7 @@
-import {
-  AlertCircle,
-  Archive, ArchiveIcon,
-  ArchiveX,
-  File, FolderIcon,
-  Inbox,
-  MessagesSquare,
-  Send,
-  ShoppingCart, StarIcon,
-  Trash2, Trash2Icon,
-  Users2,
-} from 'lucide-react';
+import { ArchiveIcon, FolderIcon, PlusIcon, StarIcon, Trash2Icon } from 'lucide-react';
 import * as React from 'react';
 
-import { Separator } from '@/ui';
+import { Button, Separator } from '@/ui';
 import { AccountSwitcher } from './account-switcher';
 import { Nav } from './nav';
 
@@ -24,11 +13,11 @@ interface Props {
   }[];
 }
 
-export default function MailFolders(props: Props) {
+export default function Folders(props: Props) {
   const { accounts } = props;
   return (
-    <div className="border-r w-1/6 shrink-0">
-      <div className="flex h-[56px] items-center justify-center px-2">
+    <div className="border-r w-1/6 shrink-0 h-[100vh] overflow-y-auto">
+      <div className="flex h-[56px] items-center justify-center px-2 sticky top-0 bg-white">
         <AccountSwitcher accounts={accounts}/>
       </div>
       <Separator/>
@@ -36,13 +25,13 @@ export default function MailFolders(props: Props) {
         links={[
           {
             title: 'Starred',
-            label: '128',
+            label: '',
             icon: StarIcon,
             variant: 'default',
           },
           {
             title: 'Archive',
-            label: '9',
+            label: '',
             icon: ArchiveIcon,
             variant: 'ghost',
           },
@@ -95,6 +84,12 @@ export default function MailFolders(props: Props) {
           },
         ]}
       />
+      <div className="sticky bottom-0 bg-white pt-2 border-t">
+        <Button variant="link">
+          <PlusIcon className="mr-2 h-4 w-4"/>
+          Add folder
+        </Button>
+      </div>
     </div>
   );
 }

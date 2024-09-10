@@ -3,7 +3,7 @@ import { PencilLineIcon, Search, Trash2Icon } from 'lucide-react';
 
 import { Button, Input, Separator, Tooltip, TooltipContent, TooltipTrigger } from '@/ui';
 import type { Mail } from '../data';
-import { MailList } from './mail-list';
+import { DocList } from './doc-list';
 
 interface Props {
   mails: Mail[];
@@ -11,7 +11,7 @@ interface Props {
   onSelected: (mailId: string) => void;
 }
 
-export default function MailLists(props: Props) {
+export default function DocLists(props: Props) {
   const { mails, selected, onSelected } = props;
   return (
     <div className="border-r w-1/4 shrink-0">
@@ -44,7 +44,7 @@ export default function MailLists(props: Props) {
           </div>
         </form>
       </div>
-      <MailList items={mails} selected={selected} onSelected={onSelected}/>
+      <DocList items={mails} selected={selected} onSelected={onSelected}/>
     </div>
   );
 }

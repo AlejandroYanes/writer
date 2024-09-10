@@ -3,16 +3,17 @@ import {
   AlignJustifyIcon,
   AlignLeftIcon,
   AlignRightIcon,
-  BaselineIcon,
   BoldIcon,
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
   Heading4Icon,
-  ItalicIcon, LayoutListIcon,
+  ItalicIcon,
+  LayoutListIcon,
   ListIcon,
   ListOrderedIcon,
   StrikethroughIcon,
+  TypeIcon,
 } from 'lucide-react';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
@@ -23,11 +24,6 @@ import TaskList from '@tiptap/extension-task-list';
 import { EditorContent, useEditor } from '@tiptap/react';
 
 import { Button, cn, Separator, Tooltip, TooltipContent, TooltipTrigger } from '@/ui';
-import type { Mail } from '../data';
-
-interface MailDisplayProps {
-  mail: Mail | null;
-}
 
 const extensions = [
   StarterKit,
@@ -63,7 +59,7 @@ const content =  `
     <p>Commodo montes curae curae facilisi in erat penatibus. Viverra vulputate aliquet iaculis massa turpis quam ex. Tincidunt nam ut sapien nec curae curae. Phasellus sed fringilla nostra magna odio libero netus tincidunt. Mi iaculis enim ligula id hendrerit elementum convallis. Cras montes fringilla libero quis porta aenean quisque nibh varius. Mauris senectus accumsan mollis integer conubia dis. Accumsan duis hendrerit placerat eros tellus quisque non nulla. Tellus odio primis non conubia, maximus phasellus mus.</p>
     `;
 
-export function MailDisplay({ mail }: MailDisplayProps) {
+export default function DocumentDisplay() {
   const editor = useEditor({
     extensions,
     content,
@@ -88,46 +84,81 @@ export function MailDisplay({ mail }: MailDisplayProps) {
         {/*<Separator orientation="vertical" className="mx-2 h-6"/>*/}
 
         <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 1 }) ? 'border' : '')}
-          >
-            <Heading1Icon className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 2 }) ? 'border' : '')}
-          >
-            <Heading2Icon className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 3 }) ? 'border' : '')}
-          >
-            <Heading3Icon className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 4 }).run()}
-            className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 4 }) ? 'border' : '')}
-          >
-            <Heading4Icon className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => editor?.chain().focus().setParagraph().run()}
-            className={cn('w-10 shrink-0', editor?.isActive('paragraph') ? 'border' : '')}
-          >
-            <BaselineIcon className="h-5 w-5" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+                className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 1 }) ? 'border' : '')}
+              >
+                <Heading1Icon className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Heading level 1
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+                className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 2 }) ? 'border' : '')}
+              >
+                <Heading2Icon className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Heading level 2
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+                className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 3 }) ? 'border' : '')}
+              >
+                <Heading3Icon className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Heading level 3
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().toggleHeading({ level: 4 }).run()}
+                className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 4 }) ? 'border' : '')}
+              >
+                <Heading4Icon className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Heading level 4
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => editor?.chain().focus().setParagraph().run()}
+                className={cn('w-10 shrink-0', editor?.isActive('paragraph') ? 'border' : '')}
+              >
+                <TypeIcon className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Text
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         <Separator orientation="vertical" className="mx-2 h-6"/>
