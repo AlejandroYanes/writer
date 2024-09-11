@@ -2,7 +2,7 @@ import {
   AlignCenterIcon,
   AlignJustifyIcon,
   AlignLeftIcon,
-  AlignRightIcon,
+  AlignRightIcon, ArchiveIcon,
   BoldIcon,
   Heading1Icon,
   Heading2Icon,
@@ -306,6 +306,15 @@ export default function DocumentDisplay() {
         <Separator orientation="vertical" className="mr-2 ml-auto h-6"/>
 
         <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <ArchiveIcon className="h-4 w-4" />
+                <span className="sr-only">Archive</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Archive</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon">

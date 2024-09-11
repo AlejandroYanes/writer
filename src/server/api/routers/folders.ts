@@ -17,5 +17,6 @@ export const foldersRouter = createTRPCRouter({
   })).mutation(async ({ ctx, input }) => {
     const userId = ctx.session.user.id;
     await sql`INSERT INTO folders (name, user_id) VALUES (${input.name}, ${userId})`;
+    return true;
   }),
 });
