@@ -21,6 +21,8 @@ export const env = createEnv({
       .default('development'),
     VERCEL_ENV: z.enum(['development', 'preview', 'production']).optional(),
 
+    BLOB_READ_WRITE_TOKEN: z.string(),
+
     NEXTAUTH_SECRET:
       process.env.NODE_ENV === 'production'
         ? z.string()
@@ -62,6 +64,8 @@ export const env = createEnv({
 
     NODE_ENV: process.env.NODE_ENV,
     VERCEL_ENV: process.env.VERCEL_ENV,
+
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
 
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,

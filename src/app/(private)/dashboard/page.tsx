@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { TooltipProvider } from '@/ui';
 import Folders from './_components/folders';
 import Articles from './_components/articles';
-import DocumentDisplay from './_components/doc-display';
+import Content from './_components/content';
 
 export default function MailPage() {
   const [selectedFolder, setSelectedFolder] = useState<number>(-1);
@@ -16,7 +16,7 @@ export default function MailPage() {
       <div className="h-screen flex items-stretch">
         <Folders selected={selectedFolder} onFolderSelected={setSelectedFolder} />
         <Articles folder={selectedFolder} selected={selectedArticle} onSelected={setSelectedFArticle} />
-        <DocumentDisplay />
+        <Content />
       </div>
     </TooltipProvider>
   )
