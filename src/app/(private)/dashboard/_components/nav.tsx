@@ -4,7 +4,7 @@ import { type ReactNode } from 'react';
 import Link from 'next/link'
 import { type LucideIcon } from 'lucide-react'
 
-import { buttonVariants, cn } from '@/ui';
+import { Button, buttonVariants, cn } from '@/ui';
 
 interface Props {
   children: ReactNode;
@@ -25,16 +25,18 @@ interface NavLinkProps {
   count?: number;
   icon: LucideIcon;
   variant: 'default' | 'ghost';
+  onClick?: () => void;
 }
 
 export function NavLink(props: NavLinkProps) {
-  const { title, count, variant, icon: Icon } = props;
+  const { title, count, variant, icon: Icon, onClick } = props;
 
   return (
-    <Link
-      href="#"
+    <Button
+      onClick={onClick}
+      variant={variant}
+      size="sm"
       className={cn(
-        buttonVariants({ variant: variant, size: 'sm' }),
         variant === 'default' &&
         'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white',
         'justify-start'
@@ -53,6 +55,6 @@ export function NavLink(props: NavLinkProps) {
           {count}
         </span>
       )}
-    </Link>
+    </Button>
   );
 }

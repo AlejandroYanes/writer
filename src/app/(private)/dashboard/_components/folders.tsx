@@ -1,10 +1,10 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArchiveIcon, FolderIcon, FolderPlusIcon, FoldersIcon, StarIcon, Trash2Icon } from 'lucide-react';
+import { ArchiveIcon, FolderIcon, FolderPlusIcon, FoldersIcon, SettingsIcon, StarIcon, Trash2Icon } from 'lucide-react';
 
 import {
   Button,
@@ -19,26 +19,25 @@ import {
   Skeleton,
 } from '@/ui';
 import { api } from '@/trpc/react';
-import { AccountSwitcher } from './account-switcher';
 import { Nav, NavLink } from './nav';
 
 interface Props {
-  accounts: {
-    label: string;
-    email: string;
-    icon: ReactNode;
-  }[];
+  selected: number | null;
+  onFolderSelected: (folder: number) => void;
 }
 
 export default function Folders(props: Props) {
-  const { accounts } = props;
+  const { selected, onFolderSelected } = props;
 
   const { data: folders = [], isLoading } = api.folders.list.useQuery();
 
   return (
     <div className="border-r w-1/6 shrink-0 h-[100vh] overflow-y-auto flex flex-col">
-      <div className="flex h-[56px] items-center justify-center px-2 sticky top-0 bg-white">
-        <AccountSwitcher accounts={accounts}/>
+      <div className="flex h-[56px] items-center justify-between pl-5 pr-2 sticky top-0 bg-white">
+        <span>John Doe</span>
+        <Button variant="ghost" size="icon">
+          <SettingsIcon className="h-4 w-4" />
+        </Button>
       </div>
       <Separator/>
       {isLoading ? <SkeletonFolders /> : null}
@@ -46,9 +45,9 @@ export default function Folders(props: Props) {
       {!isLoading ? (
         <>
           <Nav>
-            <NavLink title="Starred" icon={StarIcon} variant="default" />
-            <NavLink title="Archive" icon={ArchiveIcon} variant="ghost" />
-            <NavLink title="Deleted" icon={Trash2Icon} variant="ghost" />
+            <NavLink title="Starred" icon={StarIcon} variant={selected === -1 ? 'default' : 'ghost'} onClick={() => onFolderSelected(-1)} />
+            <NavLink title="Archive" icon={ArchiveIcon} variant={selected === -2 ? 'default' : 'ghost'} onClick={() => onFolderSelected(-2)} />
+            <NavLink title="Deleted" icon={Trash2Icon} variant={selected === -3 ? 'default' : 'ghost'} onClick={() => onFolderSelected(-3)} />
           </Nav>
           <Separator/>
         </>
@@ -57,7 +56,13 @@ export default function Folders(props: Props) {
       {!isLoading && folders.length > 0 ? (
         <Nav>
           {folders.map((folder) => (
-            <NavLink key={folder.id} title={folder.name} icon={FolderIcon} variant="ghost" />
+            <NavLink
+              variant={selected === folder.id ? 'default' : 'ghost'}
+              key={folder.id}
+              icon={FolderIcon}
+              title={folder.name}
+              onClick={() => onFolderSelected(folder.id)}
+            />
           ))}
         </Nav>
       ) : null}
