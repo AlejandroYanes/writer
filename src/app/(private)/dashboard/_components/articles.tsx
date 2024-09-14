@@ -18,12 +18,8 @@ import {
   Input,
   InputWithLabel,
   Loader,
-  ScrollArea,
-  Separator,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from '@/ui';
+import { getRelativeTime } from '@/utils/dates';
 
 interface Props {
   folder: number;
@@ -37,12 +33,8 @@ export default function Articles(props: Props) {
   const { data: articles = [] } = api.articles.list.useQuery({ folder });
 
   return (
-    <div className="border-r w-1/4 shrink-0">
-      <div className="flex items-center justify-end px-4 py-2 h-[56px]">
-        {folder > 0 ? <AddArticle folder={folder} onSuccess={onSelected} /> : null}
-      </div>
-      <Separator/>
-      <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="border-r w-1/4 shrink-0 flex flex-col h-[100vh] overflow-y-auto">
+      <div className="h-[56px] min-h-[56px] px-4 py-2 sticky top-0 bg-white border-b">
         <form>
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground"/>
@@ -50,26 +42,37 @@ export default function Articles(props: Props) {
           </div>
         </form>
       </div>
-      <ScrollArea className="h-[calc(100vh_-_128px)]">
-        <div className="flex flex-col gap-2 p-4 pt-0">
-          {articles.map((item) => (
-            <Button
-              key={item.id}
-              variant="ghost"
-              className={cn(
-                'h-auto flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent',
-                selected === item.id && 'border-rose-500',
-              )}
-              onClick={() => onSelected(item.id)}
-            >
-              <span className="font-semibold">{item.title}</span>
-              <span className="text-xs text-muted-foreground">
-                Last edit: {formatDistanceToNow(new Date(item.updated_at), { addSuffix: true })}
-              </span>
-            </Button>
-          ))}
-        </div>
-      </ScrollArea>
+      <div className="flex flex-col items-stretch gap-2 p-2">
+        {articles.map((item) => (
+          <Button
+            key={item.id}
+            variant="ghost"
+            className={cn(
+              'h-auto shrink-0 w-full flex flex-col items-start gap-2 transition-all hover:bg-accent',
+              'rounded-lg border p-3 text-left text-sm',
+              'overflow-hidden',
+              selected === item.id && 'border-rose-500',
+            )}
+            onClick={() => onSelected(item.id)}
+          >
+            <span className="font-semibold w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
+              {item.title}
+            </span>
+            {/*<span className="text-xs text-muted-foreground">*/}
+            {/*  Now: {(new Date()).toLocaleString()}*/}
+            {/*</span>*/}
+            {/*<span className="text-xs text-muted-foreground">*/}
+            {/*  Last edit: {item.updated_at.toLocaleString()}*/}
+            {/*</span>*/}
+            <span className="text-xs text-muted-foreground">
+              Last edit: {formatDistanceToNow(new Date(item.updated_at), { addSuffix: true, includeSeconds: true })}
+            </span>
+          </Button>
+        ))}
+      </div>
+      <div className="sticky bottom-0 bg-white py-2 mt-auto border-t px-2 h-[56px]">
+        {folder > 0 ? <AddArticle folder={folder} onSuccess={onSelected}/> : null}
+      </div>
     </div>
   );
 }
@@ -80,16 +83,11 @@ function AddArticle(props: { folder: number; onSuccess: (article: number) => voi
 
   return (
     <>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={() => setShowModal(true)}>
-            <PencilLineIcon className="h-4 w-4"/>
-            <span className="sr-only">Start new article</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Start new article</TooltipContent>
-      </Tooltip>
-      {showModal && <AddArticleModal folder={folder} onClose={() => setShowModal(false)} onSuccess={onSuccess} />}
+      <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => setShowModal(true)}>
+        <PencilLineIcon className="h-4 w-4 mr-2"/>
+        <span>Start article</span>
+      </Button>
+      {showModal && <AddArticleModal folder={folder} onClose={() => setShowModal(false)} onSuccess={onSuccess}/>}
     </>
   );
 }

@@ -155,6 +155,10 @@
 
   h1 {
     @apply text-4xl;
+
+    &:first-of-type {
+      @apply mb-14;
+    }
   }
 
   h2 {

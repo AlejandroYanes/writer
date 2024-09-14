@@ -26,7 +26,7 @@ export default function Dashboard(props: Props) {
       <div className="h-screen flex items-stretch">
         <Folders selected={selectedFolder} onFolderSelected={handleFolderChange} />
         <Articles folder={selectedFolder} selected={selectedArticle} onSelected={setSelectedArticle} />
-        <Content key={selectedArticle} article={selectedArticle} />
+        <Content key={selectedArticle} folder={selectedFolder} article={selectedArticle} />
       </div>
     </TooltipProvider>
   );

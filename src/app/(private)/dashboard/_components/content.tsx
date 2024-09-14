@@ -18,6 +18,7 @@ import {
   ListIcon,
   ListOrderedIcon,
   MoreVerticalIcon,
+  PencilLineIcon,
   SaveIcon,
   StarIcon,
   StrikethroughIcon,
@@ -101,11 +102,12 @@ const extensions = [
 const initialContent = ``;
 
 interface Props {
+  folder: number;
   article: number | null;
 }
 
 export default function Content(props: Props) {
-  const { article } = props;
+  const { folder, article } = props;
   const { data: session } = useSession();
 
   const { data: content, isLoading } = api.articles.getContent.useQuery({ article: article! }, { enabled: !!article });
@@ -125,8 +127,7 @@ export default function Content(props: Props) {
 
   return (
     <div className="flex h-screen flex-col flex-1">
-      <TopRow editor={editor} article={article} session={session} />
-      <Separator/>
+      <TopRow editor={editor} folder={folder} article={article} session={session} />
       {!!article && !isLoading && (
         <EditorContent editor={editor} />
       )}
@@ -135,15 +136,21 @@ export default function Content(props: Props) {
 }
 
 interface TopRowProps {
+  folder: number;
   article: number | null;
   editor: Editor | null;
   session: Session | null;
 }
 
 function TopRow(props: TopRowProps) {
-  const { editor, article, session } = props;
+  const { editor, folder, article, session } = props;
 
-  const { mutate: updateContent } = api.articles.updateContent.useMutation();
+  const utils = api.useUtils();
+  const { mutate: updateContent } = api.articles.updateContent.useMutation({
+    onSuccess: () => {
+      void utils.articles.list.invalidate({ folder });
+    },
+  });
 
   const saveContent = async () => {
     if (!editor || !article || !session?.user) return;
@@ -161,7 +168,7 @@ function TopRow(props: TopRowProps) {
   };
 
   return (
-    <div className="flex items-center p-2 gap-1">
+    <div className="flex items-center p-2 gap-1 border-b h-[56px]">
       <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -427,6 +434,10 @@ function TopRow(props: TopRowProps) {
             <DropdownMenuItem>
               <StarIcon className="h-4 w-4 mr-2"/>
               Mark as starred
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <PencilLineIcon className="h-4 w-4 mr-2"/>
+              Edit title
             </DropdownMenuItem>
             <DropdownMenuSeparator/>
             <DropdownMenuItem>

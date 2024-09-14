@@ -14,8 +14,9 @@ export default async function DashboardPage() {
   const initialQ = await sql<{ folder_id: number; article_id: number }>`
     SELECT folders.id as folder_id, articles.id as article_id
     FROM folders
-      JOIN articles ON articles.folder_id = articles.id
-    WHERE folders.user_id = ${session.user.id}`;
+      LEFT JOIN articles ON articles.folder_id = folders.id
+    WHERE folders.user_id = ${session.user.id}
+    ORDER BY folders.id, articles.id`;
 
   const response = initialQ.rows[0]!;
 

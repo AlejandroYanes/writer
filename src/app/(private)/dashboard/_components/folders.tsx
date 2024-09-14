@@ -33,13 +33,12 @@ export default function Folders(props: Props) {
 
   return (
     <div className="border-r w-1/6 shrink-0 h-[100vh] overflow-y-auto flex flex-col">
-      <div className="flex h-[56px] items-center justify-between pl-5 pr-2 sticky top-0 bg-white">
+      <div className="flex h-[56px] min-h-[56px] items-center justify-between pl-5 pr-2 sticky top-0 bg-white border-b">
         <span>John Doe</span>
         <Button variant="ghost" size="icon">
           <SettingsIcon className="h-4 w-4" />
         </Button>
       </div>
-      <Separator/>
       {isLoading ? <SkeletonFolders /> : null}
 
       {!isLoading ? (
@@ -73,7 +72,7 @@ export default function Folders(props: Props) {
           <span className="text-neutral-500 text-sm">No folders...</span>
         </div>
       ) : null}
-      <div className="sticky bottom-0 bg-white mt-auto py-2 border-t px-2">
+      <div className="sticky bottom-0 bg-white mt-auto py-2 border-t px-2 h-[56px] min-h-[56px]">
         <AddFolder />
       </div>
     </div>
@@ -97,7 +96,7 @@ function AddFolder() {
 
   return (
     <>
-      <Button variant="ghost" className="w-full justify-start" onClick={() => setShowModal(true)}>
+      <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => setShowModal(true)}>
         <FolderPlusIcon className="mr-2 h-4 w-4"/>
         Add folder
       </Button>

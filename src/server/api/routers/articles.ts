@@ -72,7 +72,8 @@ export const articlesRouter = createTRPCRouter({
 
       const response = await sql<{ id: number }>`
         UPDATE articles
-          SET content_url = ${input.content_url}
+          SET content_url = ${input.content_url},
+              updated_at = ${(new Date()).toLocaleString()}
         WHERE user_id = ${userId} AND id = ${input.article}
         RETURNING id;`;
 
