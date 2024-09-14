@@ -19,7 +19,6 @@ import {
   InputWithLabel,
   Loader,
 } from '@/ui';
-import { getRelativeTime } from '@/utils/dates';
 
 interface Props {
   folder: number;
