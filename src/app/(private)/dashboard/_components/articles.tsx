@@ -39,7 +39,7 @@ export default function Articles(props: Props) {
   return (
     <div className="border-r w-1/4 shrink-0">
       <div className="flex items-center justify-end px-4 py-2 h-[56px]">
-        {folder > 0 ? <AddArticle folder={folder} /> : null}
+        {folder > 0 ? <AddArticle folder={folder} onSuccess={onSelected} /> : null}
       </div>
       <Separator/>
       <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -74,8 +74,8 @@ export default function Articles(props: Props) {
   );
 }
 
-function AddArticle(props: { folder: number }) {
-  const { folder } = props;
+function AddArticle(props: { folder: number; onSuccess: (article: number) => void }) {
+  const { folder, onSuccess } = props;
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -89,7 +89,7 @@ function AddArticle(props: { folder: number }) {
         </TooltipTrigger>
         <TooltipContent>Start new article</TooltipContent>
       </Tooltip>
-      {showModal && <AddArticleModal folder={folder} onClose={() => setShowModal(false)} />}
+      {showModal && <AddArticleModal folder={folder} onClose={() => setShowModal(false)} onSuccess={onSuccess} />}
     </>
   );
 }
@@ -100,8 +100,8 @@ const schema = z.object({
 
 type Input = z.infer<typeof schema>;
 
-function AddArticleModal(props: { folder: number; onClose: () => void }) {
-  const { folder, onClose } = props;
+function AddArticleModal(props: { folder: number; onClose: () => void; onSuccess: (article: number) => void }) {
+  const { folder, onClose, onSuccess } = props;
 
   const form = useForm<Input>({
     defaultValues: {
@@ -113,8 +113,9 @@ function AddArticleModal(props: { folder: number; onClose: () => void }) {
   const utils = api.useUtils();
 
   const { mutate: createArticle, isPending, error } = api.articles.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (response) => {
       void utils.articles.list.invalidate({ folder });
+      onSuccess(response);
       onClose();
     },
   });

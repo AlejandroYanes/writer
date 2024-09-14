@@ -1,23 +1,23 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { sql } from '@vercel/postgres';
 
-import { useState } from 'react';
+import { getServerAuthSession } from '@/server/auth';
+import Dashboard from './_components/dashboard';
 
-import { TooltipProvider } from '@/ui';
-import Folders from './_components/folders';
-import Articles from './_components/articles';
-import Content from './_components/content';
+export default async function DashboardPage() {
+  const session = await getServerAuthSession();
 
-export default function MailPage() {
-  const [selectedFolder, setSelectedFolder] = useState<number>(-1);
-  const [selectedArticle, setSelectedFArticle] = useState<number | null>(null);
+  if (!session?.user) {
+    redirect('/');
+  }
 
-  return (
-    <TooltipProvider delayDuration={0}>
-      <div className="h-screen flex items-stretch">
-        <Folders selected={selectedFolder} onFolderSelected={setSelectedFolder} />
-        <Articles folder={selectedFolder} selected={selectedArticle} onSelected={setSelectedFArticle} />
-        <Content />
-      </div>
-    </TooltipProvider>
-  )
+  const initialQ = await sql<{ folder_id: number; article_id: number }>`
+    SELECT folders.id as folder_id, articles.id as article_id
+    FROM folders
+      JOIN articles ON articles.folder_id = articles.id
+    WHERE folders.user_id = ${session.user.id}`;
+
+  const response = initialQ.rows[0]!;
+
+  return <Dashboard folder={response.folder_id} article={response.article_id} />;
 }
