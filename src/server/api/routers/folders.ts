@@ -16,7 +16,9 @@ export const foldersRouter = createTRPCRouter({
     name: z.string().min(1, 'Please provide a name'),
   })).mutation(async ({ ctx, input }) => {
     const userId = ctx.session.user.id;
-    await sql`INSERT INTO folders (name, user_id) VALUES (${input.name}, ${userId})`;
-    return true;
+    const response = await sql<{ id:number }>`
+      INSERT INTO folders (name, user_id) VALUES (${input.name}, ${userId}) RETURNING id`;
+
+    return response.rows[0]!.id;
   }),
 });

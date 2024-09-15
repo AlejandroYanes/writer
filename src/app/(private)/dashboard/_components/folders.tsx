@@ -22,7 +22,11 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   InputWithLabel,
   Loader,
   Separator,
@@ -93,7 +97,7 @@ export default function Folders(props: Props) {
         </div>
       ) : null}
       <div className="sticky bottom-0 bg-white mt-auto py-2 border-t px-2 h-[56px] min-h-[56px]">
-        <AddFolder />
+        <AddFolder onSuccess={onFolderSelected} />
       </div>
     </div>
   );
@@ -111,7 +115,12 @@ function SkeletonFolders() {
   );
 }
 
-function AddFolder() {
+interface AddFolderProps {
+  onSuccess: (folder: number) => void;
+}
+
+function AddFolder(props: AddFolderProps) {
+  const { onSuccess } = props;
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -120,7 +129,7 @@ function AddFolder() {
         <FolderPlusIcon className="mr-2 h-4 w-4"/>
         Add folder
       </Button>
-      {showModal && <AddFolderModal onClose={() => setShowModal(false)} />}
+      {showModal && <AddFolderModal onSuccess={onSuccess} onClose={() => setShowModal(false)} />}
     </>
   );
 }
@@ -131,8 +140,8 @@ const schema = z.object({
 
 type Input = z.infer<typeof schema>;
 
-function AddFolderModal(props: { onClose: () => void }) {
-  const { onClose } = props;
+function AddFolderModal(props: AddFolderProps & { onClose: () => void }) {
+  const { onSuccess, onClose } = props;
 
   const form = useForm<Input>({
     defaultValues: {
@@ -144,8 +153,9 @@ function AddFolderModal(props: { onClose: () => void }) {
   const utils = api.useUtils();
 
   const { mutate: createFolder, isPending, error } = api.folders.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (response) => {
       void utils.folders.list.invalidate();
+      onSuccess(response);
       onClose();
     },
   });
