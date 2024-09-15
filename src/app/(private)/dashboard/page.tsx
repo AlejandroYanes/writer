@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     WHERE folders.user_id = ${session.user.id}
     ORDER BY folders.id, articles.id`;
 
-  const response = initialQ.rows[0]!;
+  const response = initialQ.rows[0];
 
-  return <Dashboard folder={response.folder_id} article={response.article_id} />;
+  return <Dashboard folder={response?.folder_id ?? null} article={response?.article_id ?? null} />;
 }

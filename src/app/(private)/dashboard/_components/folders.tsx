@@ -1,10 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { signOut } from 'next-auth/react';
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArchiveIcon, FolderIcon, FolderPlusIcon, FoldersIcon, SettingsIcon, StarIcon, Trash2Icon } from 'lucide-react';
+import {
+  ArchiveIcon,
+  FolderIcon,
+  FolderPlusIcon,
+  FoldersIcon,
+  LogOutIcon,
+  SettingsIcon,
+  StarIcon,
+  Trash2Icon,
+} from 'lucide-react';
 
 import {
   Button,
@@ -12,7 +22,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
   InputWithLabel,
   Loader,
   Separator,
@@ -35,9 +45,19 @@ export default function Folders(props: Props) {
     <div className="border-r w-1/6 shrink-0 h-[100vh] overflow-y-auto flex flex-col">
       <div className="flex h-[56px] min-h-[56px] items-center justify-between pl-5 pr-2 sticky top-0 bg-white border-b">
         <span>John Doe</span>
-        <Button variant="ghost" size="icon">
-          <SettingsIcon className="h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <SettingsIcon className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => signOut()}>
+              <LogOutIcon className="h-4 w-4 mr-2" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       {isLoading ? <SkeletonFolders /> : null}
 
