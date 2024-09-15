@@ -24,7 +24,7 @@ interface Payload {
 
 export async function sendEmail(payload: Payload) {
   const { error, data } = await resend.emails.send({
-    from: payload.from ?? 'HR Hub <contact@mndy.link>',
+    from: payload.from ?? 'Writer <contact@mndy.link>',
     to: payload.to,
     subject: payload.subject,
     react: (
@@ -49,7 +49,7 @@ interface BatchPayload {
 
 export async function sendEmailBatch(payload: BatchPayload) {
   const batch = payload.to.map((to) => ({
-    from: payload.from ?? 'HR Hub <contact@mndy.link>',
+    from: payload.from ?? 'Writer <contact@mndy.link>',
     to,
     subject: payload.subject,
     react: (
@@ -74,7 +74,7 @@ interface VerificationEmailPayload {
 export function sendVerificationEmail(payload: VerificationEmailPayload) {
   return sendEmail({
     to: isProductionServer() ? payload.email : env.RESEND_FALLBACK_EMAIL,
-    subject: 'Sign in to HR Hub',
+    subject: 'Sign in to Writer',
     body: (
       <div>
         <p>
@@ -85,9 +85,6 @@ export function sendVerificationEmail(payload: VerificationEmailPayload) {
         <br />
         <p>
           This link will expire in 24 hours.
-          <br/>
-          <br/>
-          The HR Hub Team.
         </p>
       </div>
     ),
