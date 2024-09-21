@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -43,12 +43,14 @@ interface Props {
 export default function Folders(props: Props) {
   const { selected, onFolderSelected } = props;
 
+  const { data: session } = useSession();
+
   const { data: folders = [], isLoading } = api.folders.list.useQuery();
 
   return (
     <div className="border-r w-1/6 shrink-0 h-[100vh] overflow-y-auto flex flex-col">
       <div className="flex h-[56px] min-h-[56px] items-center justify-between pl-5 pr-2 sticky top-0 bg-white border-b">
-        <span>John Doe</span>
+        <span>{session?.user?.name ?? ''}</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
