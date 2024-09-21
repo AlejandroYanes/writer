@@ -79,11 +79,7 @@ export function PsqlAdapter(): Adapter {
     },
     updateUser: async ({ id, ...data }) => {
       const response = await sql<{ id: string; email: string; email_verified: string; name: string; image: string }>`
-        UPDATE users SET
-          name = ${data.name},
-          email = ${data.email},
-          image = ${data.image},
-          email_verified = ${data.emailVerified ? data.emailVerified.toDateString() : null}
+        UPDATE users SET email_verified = ${data.emailVerified ? data.emailVerified.toDateString() : null}
         WHERE id = ${id}
         RETURNING id, email, email_verified, name, image`;
 
@@ -177,13 +173,12 @@ export function PsqlAdapter(): Adapter {
     },
     deleteSession: async (sessionToken) => {
       const client = await sql.connect();
-      await client.sql`SELECT * FROM sessions WHERE session_token = ${sessionToken}`;
       await client.sql`DELETE FROM sessions WHERE session_token = ${sessionToken}`;
     },
     createVerificationToken: async (data) => {
       const response = await sql<{ id: string; token: string; identifier: string; expires: string }>`
         INSERT INTO verification_tokens (token, identifier, expires)
-        VALUES (${data.token}, ${data.identifier}, ${data.expires.toDateString()})
+        VALUES (${data.token}, ${data.identifier}, ${data.expires.toLocaleDateString()})
         RETURNING token, identifier, expires`;
 
       const verificationToken = response.rows[0]!;
