@@ -1,42 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { upload } from '@vercel/blob/client';
 import { useSession } from 'next-auth/react';
 import type { Session } from 'next-auth';
-import {
-  AlignCenterIcon,
-  AlignJustifyIcon,
-  AlignLeftIcon,
-  AlignRightIcon,
-  ArchiveIcon,
-  BoldIcon,
-  Heading1Icon,
-  Heading2Icon,
-  Heading3Icon,
-  Heading4Icon,
-  ItalicIcon,
-  LayoutListIcon,
-  ListIcon,
-  ListOrderedIcon,
-  MoreVerticalIcon,
-  PencilLineIcon,
-  SaveIcon,
-  StarIcon,
-  StrikethroughIcon,
-  Trash2Icon,
-  TypeIcon,
-} from 'lucide-react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import Highlight from '@tiptap/extension-highlight';
-import Typography from '@tiptap/extension-typography';
-import TextAlign from '@tiptap/extension-text-align';
-import TaskItem from '@tiptap/extension-task-item';
-import TaskList from '@tiptap/extension-task-list';
-import { type Editor, EditorContent, useEditor } from '@tiptap/react';
+import { ArchiveIcon, MoreVerticalIcon, PencilLineIcon, SaveIcon, StarIcon, Trash2Icon } from 'lucide-react';
+import { type Editor } from '@tiptap/react';
+import { Doc as YDoc } from 'yjs';
 
 import {
   Button,
-  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -48,58 +19,8 @@ import {
   TooltipTrigger,
 } from '@/ui';
 import { api } from '@/trpc/react';
-
-const extensions = [
-  StarterKit,
-  Placeholder.configure({
-    showOnlyCurrent: false,
-    placeholder: ({ pos, editor }) => {
-      const nodes = editor.getJSON().content?.length;
-
-      if (nodes === 1 && pos === 0) {
-        return 'Start writing...'
-      }
-
-      return '';
-    },
-  }),
-  Highlight,
-  Typography,
-  TextAlign.configure({
-    types: ['heading', 'paragraph'],
-  }),
-  TaskList,
-  TaskItem,
-];
-
-// const content =  `
-//     <h1>
-//       Markdown shortcuts
-//     </h1>
-//     <h3>Markdown shortcuts make it easy to format the text while typing.</h3>
-//     <p>
-//       Markdown shortcuts make it easy to format the text while typing.
-//     </p>
-//     <p>
-//       To test that, start a new line and type <code>#</code> followed by a space to get a heading. Try <code>#</code>, <code>##</code>, <code>###</code>, <code>####</code>, <code>#####</code>, <code>######</code> for different levels.
-//     </p>
-//     <p>
-//       Those conventions are called input rules in Tiptap. Some of them are enabled by default. Try <code>></code> for blockquotes, <code>*</code>, <code>-</code> or <code>+</code> for bullet lists, or <code>\`foobar\`</code> to highlight code, <code>~~tildes~~</code> to strike text, or <code>==equal signs==</code> to highlight text.
-//     </p>
-//     <p>
-//       You can overwrite existing input rules or add your own to nodes, marks and extensions.
-//     </p>
-//     <p>
-//       For example, we added the <code>Typography</code> extension here. Try typing <code>(c)</code> to see how it’s converted to a proper © character. You can also try <code>-></code>, <code>>></code>, <code>1/2</code>, <code>!=</code>, or <code>--</code>.
-//     </p>
-//     <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Diam etiam libero bibendum viverra class proin iaculis nam. Mauris massa fames molestie pharetra justo phasellus amet massa scelerisque. Netus dignissim lobortis lacus efficitur, fringilla neque at elit. Laoreet aliquet tellus euismod ullamcorper rutrum pretium enim maximus. Auctor quisque ante pharetra velit interdum, hac inceptos curae. Viverra nulla facilisis pharetra sodales taciti suspendisse suspendisse. Dolor volutpat eros eget cras orci blandit. Viverra in blandit at per egestas.</p>
-//     <p>Litora bibendum primis; semper sem volutpat eget fusce. Mauris ut nam senectus aenean montes dictumst placerat nisi. Nibh nunc aliquet nec netus auctor ex taciti. Primis dictum parturient maximus laoreet imperdiet tortor hac. Nulla curae vel lectus lectus quis, per proin torquent. Eu lacus erat posuere id velit varius senectus aliquam ridiculus. Ridiculus felis sollicitudin lorem habitasse senectus etiam consequat purus porttitor. Molestie dictumst venenatis litora hendrerit dignissim praesent est. Nisl mi vel risus primis maximus ipsum.</p>
-//     <p>Vehicula per taciti est iaculis, tincidunt mus luctus. Tempor tortor fames consectetur rutrum parturient. Curabitur quis eu class porta morbi quisque fames. Cubilia hac nunc nascetur, congue himenaeos eget etiam in. Ipsum lorem nostra luctus suspendisse nullam condimentum ut. Luctus nisl a porttitor faucibus laoreet. Faucibus id sapien sollicitudin tempor pharetra magnis a luctus vulputate. Phasellus pharetra pulvinar velit quis nascetur in nulla molestie penatibus. Nisi porta sollicitudin taciti hendrerit porta interdum placerat justo? Hendrerit in ornare justo netus in interdum luctus ante.</p>
-//     <p>Ultrices dictum pretium feugiat; senectus pretium felis. Arcu vestibulum venenatis molestie interdum torquent sagittis posuere nisi. Bibendum vestibulum praesent etiam dictumst, amet porta feugiat. Facilisi ornare a arcu aenean mollis duis interdum. Facilisis massa dignissim hendrerit maecenas taciti. Luctus convallis eu penatibus ante nibh, quis blandit. Accumsan felis iaculis; blandit morbi habitant a efficitur condimentum. Venenatis maximus aptent nostra neque ante augue penatibus arcu nec. Ac penatibus a tempor eros pellentesque justo a montes litora.</p>
-//     <p>Commodo montes curae curae facilisi in erat penatibus. Viverra vulputate aliquet iaculis massa turpis quam ex. Tincidunt nam ut sapien nec curae curae. Phasellus sed fringilla nostra magna odio libero netus tincidunt. Mi iaculis enim ligula id hendrerit elementum convallis. Cras montes fringilla libero quis porta aenean quisque nibh varius. Mauris senectus accumsan mollis integer conubia dis. Accumsan duis hendrerit placerat eros tellus quisque non nulla. Tellus odio primis non conubia, maximus phasellus mus.</p>
-//     `;
-
-const initialContent = ``;
+import { BlockEditor } from '@/components/BlockEditor';
+import { useBlockEditor } from '@/hooks/useBlockEditor';
 
 interface Props {
   folder: number;
@@ -110,14 +31,13 @@ export default function Content(props: Props) {
   const { folder, article } = props;
   const { data: session } = useSession();
 
-  const { data: content, isLoading } = api.articles.getContent.useQuery({ article: article! }, { enabled: !!article });
-
-  const editor = useEditor({
-    extensions,
-    content: initialContent,
-    immediatelyRender: false,
-    editorProps: { attributes: { class: 'h-[calc(100vh_-_56px)] mx-auto' } },
+  const ydoc = useMemo(() => new YDoc(), []);
+  const { editor } = useBlockEditor({
+    ydoc,
+    className: 'h-[calc(100vh_-_56px)] m-0',
   });
+
+  const { data: content, isLoading } = api.articles.getContent.useQuery({ article: article! }, { enabled: !!article });
 
   useEffect(() => {
     if (editor && content) {
@@ -126,10 +46,10 @@ export default function Content(props: Props) {
   }, [content, editor]);
 
   return (
-    <div className="flex h-screen flex-col flex-1">
+    <div className="flex h-screen flex-col flex-1 relative" data-el="content-writer">
       <TopRow editor={editor} folder={folder} article={article} session={session} />
-      {!!article && !isLoading && (
-        <EditorContent editor={editor} />
+      {!!editor && !!article && !isLoading && (
+        <BlockEditor editor={editor} />
       )}
     </div>
   )
@@ -157,6 +77,7 @@ function TopRow(props: TopRowProps) {
 
     const userId = session.user.id;
     const jsonContent = editor.getJSON();
+    console.log(userId, jsonContent);
     const articleName = `article_${article}.json`;
     const articlePath = `${userId}/articles/`;
     const contentFile = new File([JSON.stringify(jsonContent)], articleName, { type: 'application/json' });
@@ -169,242 +90,7 @@ function TopRow(props: TopRowProps) {
 
   return (
     <div className="flex items-center p-2 gap-1 border-b h-[56px]">
-      <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-              className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 1 }) ? 'border' : '')}
-            >
-              <Heading1Icon className="h-5 w-5"/>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Heading level 1
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-              className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 2 }) ? 'border' : '')}
-            >
-              <Heading2Icon className="h-5 w-5"/>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Heading level 2
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-              className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 3 }) ? 'border' : '')}
-            >
-              <Heading3Icon className="h-5 w-5"/>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Heading level 3
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleHeading({ level: 4 }).run()}
-              className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 4 }) ? 'border' : '')}
-            >
-              <Heading4Icon className="h-5 w-5"/>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Heading level 4
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().setParagraph().run()}
-              className={cn('w-10 shrink-0', editor?.isActive('paragraph') ? 'border' : '')}
-            >
-              <TypeIcon className="h-4 w-4"/>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Text
-          </TooltipContent>
-        </Tooltip>
-      </div>
-
-      <Separator orientation="vertical" className="mx-2 h-6"/>
-
-      <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleBold().run()}
-              className={editor?.isActive('bold') ? 'border' : ''}
-            >
-              <BoldIcon className="h-4 w-4"/>
-              <span className="sr-only">Bold</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Bold</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleItalic().run()}
-              className={editor?.isActive('italic') ? 'border' : ''}
-            >
-              <ItalicIcon className="h-4 w-4"/>
-              <span className="sr-only">Italic</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Italic</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleStrike().run()}
-              className={editor?.isActive('strike') ? 'border' : ''}
-            >
-              <StrikethroughIcon className="h-4 w-4"/>
-              <span className="sr-only">Strikethrough</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Strikethrough</TooltipContent>
-        </Tooltip>
-      </div>
-
-      <Separator orientation="vertical" className="mx-2 h-6"/>
-
-      <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().setTextAlign('left').run()}
-              className={editor?.isActive({ textAlign: 'left' }) ? 'border' : ''}
-            >
-              <AlignLeftIcon className="h-4 w-4"/>
-              <span className="sr-only">Align left</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Align left</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().setTextAlign('center').run()}
-              className={editor?.isActive({ textAlign: 'center' }) ? 'border' : ''}
-            >
-              <AlignCenterIcon className="h-4 w-4"/>
-              <span className="sr-only">Align center</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Align center</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().setTextAlign('right').run()}
-              className={editor?.isActive({ textAlign: 'right' }) ? 'border' : ''}
-            >
-              <AlignRightIcon className="h-4 w-4"/>
-              <span className="sr-only">Align right</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Align right</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().setTextAlign('justify').run()}
-              className={editor?.isActive({ textAlign: 'justify' }) ? 'border' : ''}
-            >
-              <AlignJustifyIcon className="h-4 w-4"/>
-              <span className="sr-only">Align justify</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Align justify</TooltipContent>
-        </Tooltip>
-      </div>
-
-      <Separator orientation="vertical" className="mx-2 h-6"/>
-
-      <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleBulletList().run()}
-              className={editor?.isActive('bulletList') ? 'border' : ''}
-            >
-              <ListIcon className="h-5 w-5"/>
-              <span className="sr-only">Bullet list</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Bullet list</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-              className={editor?.isActive('orderedList') ? 'border' : ''}
-            >
-              <ListOrderedIcon className="h-5 w-5"/>
-              <span className="sr-only">Number list</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Number list</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => editor?.chain().focus().toggleTaskList().run()}
-              className={editor?.isActive('taskList') ? 'border' : ''}
-            >
-              <LayoutListIcon className="h-5 w-5"/>
-              <span className="sr-only">Task list</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Task list</TooltipContent>
-        </Tooltip>
-      </div>
-
-      <Separator orientation="vertical" className="mr-2 ml-auto h-6"/>
-
-      <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
+      <div className="rounded-md ml-auto flex flex-row gap-1 items-center overflow-hidden shrink-0">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -454,131 +140,3 @@ function TopRow(props: TopRowProps) {
     </div>
   );
 }
-
-// TODO: code for the bubble menu in the future
-// {editor && (
-//   <BubbleMenu
-//     className="p-1 flex flex-row items-center gap-1 bg-white border rounded shadow-sm overflow-x-auto max-w-lg"
-//     tippyOptions={{ duration: 100 }}
-//     editor={editor}
-//   >
-//     <Button
-//       variant="ghost"
-//       size="icon"
-//       onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 1 }) ? 'border' : '')}
-//     >
-//       <Heading1Icon className="h-5 w-5" />
-//     </Button>
-//     <Button
-//       variant="ghost"
-//       size="icon"
-//       onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 2 }) ? 'border' : '')}
-//     >
-//       <Heading2Icon className="h-5 w-5" />
-//     </Button>
-//     <Button
-//       variant="ghost"
-//       size="icon"
-//       onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 3 }) ? 'border' : '')}
-//     >
-//       <Heading3Icon className="h-5 w-5" />
-//     </Button>
-//     <Button
-//       variant="ghost"
-//       size="icon"
-//       onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
-//       className={cn('w-10 shrink-0', editor?.isActive('heading', { level: 4 }) ? 'border' : '')}
-//     >
-//       <Heading4Icon className="h-5 w-5" />
-//     </Button>
-//
-//     <Separator orientation="vertical" className="mx-2 h-6"/>
-//
-//     <Button
-//       variant="ghost"
-//       size="icon"
-//       onClick={() => editor.chain().focus().toggleBold().run()}
-//       className={cn('w-10 shrink-0', editor?.isActive('bold') ? 'border' : '')}
-//     >
-//       <BoldIcon className="h-4 w-4" />
-//     </Button>
-//     <Button
-//       variant="ghost"
-//       size="icon"
-//       onClick={() => editor.chain().focus().toggleItalic().run()}
-//       className={cn('w-10 shrink-0', editor?.isActive('italic') ? 'border' : '')}
-//     >
-//       <ItalicIcon className="h-4 w-4" />
-//     </Button>
-//     <Button
-//       variant="ghost"
-//       size="icon"
-//       onClick={() => editor.chain().focus().toggleStrike().run()}
-//       className={cn('w-10 shrink-0', editor?.isActive('strike') ? 'border' : '')}
-//     >
-//       <StrikethroughIcon className="h-4 w-4" />
-//     </Button>
-//
-//     <Separator orientation="vertical" className="mx-2 h-6"/>
-//
-//     <Tooltip>
-//       <TooltipTrigger asChild>
-//         <Button
-//           variant="ghost"
-//           size="icon"
-//           onClick={() => editor?.chain().focus().setTextAlign('left').run()}
-//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'left' }) ? 'border' : '')}
-//         >
-//           <AlignLeftIcon className="h-4 w-4"/>
-//           <span className="sr-only">Align left</span>
-//         </Button>
-//       </TooltipTrigger>
-//       <TooltipContent>Align left</TooltipContent>
-//     </Tooltip>
-//     <Tooltip>
-//       <TooltipTrigger asChild>
-//         <Button
-//           variant="ghost"
-//           size="icon"
-//           onClick={() => editor?.chain().focus().setTextAlign('center').run()}
-//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'center' }) ? 'border' : '')}
-//         >
-//           <AlignCenterIcon className="h-4 w-4"/>
-//           <span className="sr-only">Align center</span>
-//         </Button>
-//       </TooltipTrigger>
-//       <TooltipContent>Align center</TooltipContent>
-//     </Tooltip>
-//     <Tooltip>
-//       <TooltipTrigger asChild>
-//         <Button
-//           variant="ghost"
-//           size="icon"
-//           onClick={() => editor?.chain().focus().setTextAlign('right').run()}
-//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'right' }) ? 'border' : '')}
-//         >
-//           <AlignRightIcon className="h-4 w-4"/>
-//           <span className="sr-only">Align right</span>
-//         </Button>
-//       </TooltipTrigger>
-//       <TooltipContent>Align right</TooltipContent>
-//     </Tooltip>
-//     <Tooltip>
-//       <TooltipTrigger asChild>
-//         <Button
-//           variant="ghost"
-//           size="icon"
-//           onClick={() => editor?.chain().focus().setTextAlign('justify').run()}
-//           className={cn('w-10 shrink-0', editor?.isActive({ textAlign: 'justify' }) ? 'border' : '')}
-//         >
-//           <AlignJustifyIcon className="h-4 w-4"/>
-//           <span className="sr-only">Align justify</span>
-//         </Button>
-//       </TooltipTrigger>
-//       <TooltipContent>Align justify</TooltipContent>
-//     </Tooltip>
-//   </BubbleMenu>
-// )}
