@@ -8,6 +8,7 @@ export * from './button';
 export * from './breadcrumb';
 export * from './card';
 export * from './calendar';
+export * from './category-bar';
 export * from './checkbox';
 export * from './code';
 export * from './code-block';
