@@ -3,29 +3,29 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui';
 import { LineChart } from '@/ui/line-chart';
 
-export default function SingleStat() {
+export default function SingleChart() {
   return (
-    <Card className="overflow-hidden">
+    <Card className="w-full">
       <CardHeader className="space-y-2">
         <div className="flex flex-row items-center gap-1">
           <span className="text-xs text-white rounded-full py-0 px-1.5 bg-violet-500">MAU</span>
           <span className="text-xs">JAN 2024</span>
         </div>
-        <CardTitle className="text-7xl">52k</CardTitle>
-        <CardDescription className="w-1/2">Marketing campaign effectiveness</CardDescription>
+        <CardTitle className="text-5xl">52k</CardTitle>
+        <CardDescription>Marketing campaign effectiveness</CardDescription>
       </CardHeader>
-      <CardContent className="relative">
-        <div className="absolute rotate-[-44deg] bottom-[-62px] right-[-90px] h-48 overflow-hidden pointer-events-none">
-          <LineChart
-            index="date"
-            lineType="natural"
-            className="w-80 h-64"
-            data={chartData}
-            valueFormatter={valueFormatter}
-            colors={['violet', 'gray']}
-            categories={['SolarPanels', 'Inverters']}
-          />
-        </div>
+      <CardContent>
+        <LineChart
+          index="date"
+          lineType="natural"
+          className="w-full h-80"
+          data={chartData}
+          showYAxis
+          showGridLines
+          valueFormatter={valueFormatter}
+          colors={['violet', 'gray']}
+          categories={['SolarPanels', 'Inverters']}
+        />
       </CardContent>
     </Card>
   );
@@ -36,18 +36,18 @@ const valueFormatter = (number: number) => `$${Intl.NumberFormat('us').format(nu
 const chartData = [
   {
     date: 'Jan 23',
-    SolarPanels: 2890,
-    Inverters: 2538,
+    SolarPanels: 890,
+    Inverters: 538,
   },
   {
     date: 'Feb 23',
-    SolarPanels: 2756,
-    Inverters: 2403,
+    SolarPanels: 1756,
+    Inverters: 1303,
   },
   {
     date: 'Mar 23',
     SolarPanels: 3022,
-    Inverters: 2694,
+    Inverters: 2594,
   },
   {
     date: 'Apr 23',
@@ -91,7 +91,7 @@ const chartData = [
   },
   {
     date: 'Dec 23',
-    SolarPanels: 2239,
-    Inverters: 2736,
+    SolarPanels: 3839,
+    Inverters: 3736,
   },
 ];

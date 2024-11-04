@@ -1,7 +1,9 @@
 import Block from './_components/block';
 import CardsCluster from './_components/cards-cluster';
 import BreakDown from './_components/break-down';
-import SingleStat from '@/app/gallery/_components/single-stat';
+import SingleStat from './_components/single-stat';
+import SingleChart from './_components/single-chart';
+import FancyTable from './_components/fancy-table';
 
 export default function GalleryPage() {
   return (
@@ -14,6 +16,12 @@ export default function GalleryPage() {
       </Block>
       <Block>
         <SingleStat />
+      </Block>
+      <Block>
+        <SingleChart />
+      </Block>
+      <Block>
+        <FancyTable />
       </Block>
     </main>
   );
