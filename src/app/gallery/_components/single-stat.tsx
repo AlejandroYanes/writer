@@ -12,7 +12,7 @@ export default function SingleStat() {
           <span className="text-xs">JAN 2024</span>
         </div>
         <CardTitle className="text-7xl">52k</CardTitle>
-        <CardDescription className="w-1/2">Marketing campaign effectiveness</CardDescription>
+        <CardDescription className="w-2/3">Marketing campaign effectiveness</CardDescription>
       </CardHeader>
       <CardContent className="relative">
         <div className="absolute rotate-[-44deg] bottom-[-62px] right-[-90px] h-48 overflow-hidden pointer-events-none">
