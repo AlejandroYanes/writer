@@ -104,7 +104,7 @@ function TopRow(props: TopRowProps) {
     const jsonContent = editor.getJSON();
     console.log(userId, jsonContent);
     const articleName = `article_${article}.json`;
-    const articlePath = `${userId}/articles/`;
+    const articlePath = `${userId}/articles/article_${article}/`;
     const contentFile = new File([JSON.stringify(jsonContent)], articleName, { type: 'application/json' });
     const newBlob = await upload(`${articlePath}${articleName}`, contentFile, {
       access: 'public',

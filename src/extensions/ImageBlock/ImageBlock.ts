@@ -1,5 +1,5 @@
 import { ReactNodeViewRenderer } from '@tiptap/react'
-import { mergeAttributes, Range } from '@tiptap/core'
+import { mergeAttributes, type Range } from '@tiptap/core'
 
 import { ImageBlockView } from './components/ImageBlockView'
 import { Image } from '../Image'
@@ -7,11 +7,11 @@ import { Image } from '../Image'
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     imageBlock: {
-      setImageBlock: (attributes: { src: string }) => ReturnType
-      setImageBlockAt: (attributes: { src: string; pos: number | Range }) => ReturnType
-      setImageBlockAlign: (align: 'left' | 'center' | 'right') => ReturnType
-      setImageBlockWidth: (width: number) => ReturnType
-    }
+      setImageBlock: (attributes: { src: string }) => ReturnType;
+      setImageBlockAt: (attributes: { src: string; pos: number | Range }) => ReturnType;
+      setImageBlockAlign: (align: 'left' | 'center' | 'right') => ReturnType;
+      setImageBlockWidth: (width: number) => ReturnType;
+    };
   }
 }
 
@@ -73,25 +73,25 @@ export const ImageBlock = Image.extend({
     return {
       setImageBlock:
         attrs =>
-        ({ commands }) => {
-          return commands.insertContent({ type: 'imageBlock', attrs: { src: attrs.src } })
-        },
+          ({ commands }) => {
+            return commands.insertContent({ type: 'imageBlock', attrs: { src: attrs.src } })
+          },
 
       setImageBlockAt:
         attrs =>
-        ({ commands }) => {
-          return commands.insertContentAt(attrs.pos, { type: 'imageBlock', attrs: { src: attrs.src } })
-        },
+          ({ commands }) => {
+            return commands.insertContentAt(attrs.pos, { type: 'imageBlock', attrs: { src: attrs.src } })
+          },
 
       setImageBlockAlign:
         align =>
-        ({ commands }) =>
-          commands.updateAttributes('imageBlock', { align }),
+          ({ commands }) =>
+            commands.updateAttributes('imageBlock', { align }),
 
       setImageBlockWidth:
         width =>
-        ({ commands }) =>
-          commands.updateAttributes('imageBlock', { width: `${Math.max(0, Math.min(100, width))}%` }),
+          ({ commands }) =>
+            commands.updateAttributes('imageBlock', { width: `${Math.max(0, Math.min(100, width))}%` }),
     }
   },
 
