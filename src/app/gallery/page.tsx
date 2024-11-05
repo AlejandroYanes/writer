@@ -4,6 +4,7 @@ import BreakDown from './_components/break-down';
 import SingleStat from './_components/single-stat';
 import SingleChart from './_components/single-chart';
 import FancyTable from './_components/fancy-table';
+import OrderedTable from './_components/ordered-table';
 
 export default function GalleryPage() {
   return (
@@ -22,6 +23,9 @@ export default function GalleryPage() {
       </Block>
       <Block>
         <FancyTable />
+      </Block>
+      <Block>
+        <OrderedTable />
       </Block>
     </main>
   );

@@ -4,7 +4,7 @@ export default function FancyTable() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly Expenses</CardTitle>
+        <CardTitle className="text-4xl">Monthly Expenses</CardTitle>
         <CardDescription>
           Improvements vs last month
         </CardDescription>

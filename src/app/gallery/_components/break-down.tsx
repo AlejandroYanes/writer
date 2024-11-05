@@ -3,7 +3,6 @@ import { SparkleIcon } from 'lucide-react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   CategoryBar, cn,
@@ -16,11 +15,7 @@ export default function BreakDown() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardDescription className="flex flex-row items-center gap-1">
-          <SparkleIcon className="h-3 w-3" />
-          <span className="text-xs">STATS</span>
-        </CardDescription>
-        <CardTitle>Traffic sources</CardTitle>
+        <CardTitle className="text-4xl">Traffic sources</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div>

@@ -5,7 +5,7 @@ import { LineChart } from '@/ui/line-chart';
 
 export default function SingleStat() {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden min-w-96">
       <CardHeader className="space-y-2">
         <div className="flex flex-row items-center gap-1">
           <span className="text-xs text-white rounded-full py-0 px-1.5 bg-violet-500">MAU</span>
