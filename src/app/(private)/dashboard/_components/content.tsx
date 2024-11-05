@@ -1,8 +1,16 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { upload } from '@vercel/blob/client';
 import { useSession } from 'next-auth/react';
 import type { Session } from 'next-auth';
-import { ArchiveIcon, MoreVerticalIcon, PencilLineIcon, SaveIcon, StarIcon, Trash2Icon } from 'lucide-react';
+import {
+  ArchiveIcon,
+  Layers3Icon,
+  MoreVerticalIcon,
+  PencilLineIcon,
+  SaveIcon,
+  StarIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import { type Editor } from '@tiptap/react';
 import { Doc as YDoc } from 'yjs';
 
@@ -13,7 +21,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  Separator,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -21,6 +28,7 @@ import {
 import { api } from '@/trpc/react';
 import { BlockEditor } from '@/components/BlockEditor';
 import { useBlockEditor } from '@/hooks/useBlockEditor';
+import SlidesEditor from '@/components/slides-editor';
 
 interface Props {
   folder: number;
@@ -30,6 +38,8 @@ interface Props {
 export default function Content(props: Props) {
   const { folder, article } = props;
   const { data: session } = useSession();
+
+  const [view, setView] = useState<'editor' | 'presentation'>('editor');
 
   const ydoc = useMemo(() => new YDoc(), []);
   const { editor } = useBlockEditor({
@@ -45,11 +55,24 @@ export default function Content(props: Props) {
     }
   }, [content, editor]);
 
+  const toggleView = () => {
+    setView(view === 'editor' ? 'presentation' : 'editor');
+  };
+
   return (
     <div className="flex h-screen flex-col flex-1 relative" data-el="content-writer">
-      <TopRow editor={editor} folder={folder} article={article} session={session} />
+      <TopRow
+        editor={editor}
+        folder={folder}
+        article={article}
+        session={session}
+        view={view}
+        toggleView={toggleView}
+      />
       {!!editor && !!article && !isLoading && (
-        <BlockEditor editor={editor} />
+        view === 'editor'
+          ? <BlockEditor editor={editor} />
+          : <SlidesEditor editor={editor} />
       )}
     </div>
   )
@@ -60,10 +83,12 @@ interface TopRowProps {
   article: number | null;
   editor: Editor | null;
   session: Session | null;
+  view: 'editor' | 'presentation';
+  toggleView: () => void;
 }
 
 function TopRow(props: TopRowProps) {
-  const { editor, folder, article, session } = props;
+  const { editor, folder, article, session, view, toggleView } = props;
 
   const utils = api.useUtils();
   const { mutate: updateContent } = api.articles.updateContent.useMutation({
@@ -96,6 +121,23 @@ function TopRow(props: TopRowProps) {
             <Button
               variant="ghost"
               size="icon"
+              onClick={toggleView}
+            >
+              {view === 'editor' ? <Layers3Icon className="h-5 w-5"/> : <PencilLineIcon className="h-5 w-5"/>}
+              <span className="sr-only">
+                {view === 'editor' ? 'Edit Slides' : 'Edit content'}
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {view === 'editor' ? 'Edit Slides' : 'Edit content'}
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={saveContent}
             >
               <SaveIcon className="h-5 w-5"/>
@@ -105,8 +147,6 @@ function TopRow(props: TopRowProps) {
           <TooltipContent>Save</TooltipContent>
         </Tooltip>
       </div>
-
-      <Separator orientation="vertical" className="mx-2 h-6"/>
 
       <div className="rounded-md flex flex-row gap-1 items-center overflow-hidden shrink-0">
         <DropdownMenu>
