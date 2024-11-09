@@ -1,5 +1,6 @@
 'use client'
 
+import API from '@/extensions/api';
 import {
   BlockquoteFigure,
   CodeBlock,
@@ -43,7 +44,6 @@ import {
   emojiSuggestion,
 } from '.';
 import { ImageUpload } from './ImageUpload'
-import API from '@/lib/api';
 
 export const ExtensionKit = () => [
   Document,
@@ -97,22 +97,24 @@ export const ExtensionKit = () => [
     onDrop: (currentEditor, files, pos) => {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       files.forEach(async (file) => {
-        const url = await API.uploadImage(file)
-
-        currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run()
-      })
+        const url = await API.uploadImage(file);
+        if (url) {
+          currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run();
+        }
+      });
     },
     onPaste: (currentEditor, files) => {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       files.forEach(async (file) => {
-        const url = await API.uploadImage(file)
-
-        return currentEditor
-          .chain()
-          .setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: url })
-          .focus()
-          .run()
-      })
+        const url = await API.uploadImage(file);
+        if (url) {
+          currentEditor
+            .chain()
+            .setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: url })
+            .focus()
+            .run();
+        }
+      });
     },
   }),
   Emoji.configure({

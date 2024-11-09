@@ -6,6 +6,16 @@ await import('./src/env.js');
 
 /** @type {import("next").NextConfig} */
 const config = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'e9pb986jsmo6fpka.public.blob.vercel-storage.com/',
+        port: '',
+        search: '',
+      },
+    ],
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

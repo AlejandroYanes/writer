@@ -44,6 +44,8 @@ export default function Content(props: Props) {
   const ydoc = useMemo(() => new YDoc(), []);
   const { editor } = useBlockEditor({
     ydoc,
+    article: article,
+    user: session?.user.id ?? null,
     className: 'h-[calc(100vh_-_56px)] m-0',
   });
 
@@ -102,11 +104,10 @@ function TopRow(props: TopRowProps) {
 
     const userId = session.user.id;
     const jsonContent = editor.getJSON();
-    console.log(userId, jsonContent);
-    const articleName = `article_${article}.json`;
-    const articlePath = `${userId}/articles/article_${article}/`;
-    const contentFile = new File([JSON.stringify(jsonContent)], articleName, { type: 'application/json' });
-    const newBlob = await upload(`${articlePath}${articleName}`, contentFile, {
+    const fileName = `article_${article}.json`;
+    const filePath = `${userId}/articles/article_${article}/`;
+    const contentFile = new File([JSON.stringify(jsonContent)], fileName, { type: 'application/json' });
+    const newBlob = await upload(`${filePath}${fileName}`, contentFile, {
       access: 'public',
       handleUploadUrl: `/api/articles/upload/${userId}/${article}`,
     });

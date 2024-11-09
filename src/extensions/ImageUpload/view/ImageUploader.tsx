@@ -1,10 +1,10 @@
-import { type ChangeEvent, useCallback } from 'react'
+import { type ChangeEvent, useCallback } from 'react';
 
-import { cn } from '@/lib/utils'
-import { Spinner } from '@/components/ui/Spinner'
-import { Button } from '@/components/ui/Button'
-import { Icon } from '@/components/ui/Icon'
-import { useDropZone, useFileUpload, useUploader } from './hooks'
+import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/Spinner';
+import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
+import { useDropZone, useFileUpload, useUploader } from './hooks';
 
 export const ImageUploader = ({ onUpload }: { onUpload: (url: string) => void }) => {
   const { loading, uploadFile } = useUploader({ onUpload })
@@ -25,7 +25,7 @@ export const ImageUploader = ({ onUpload }: { onUpload: (url: string) => void })
   }
 
   const wrapperClass = cn(
-    'flex flex-col items-center justify-center px-8 py-10 rounded-lg bg-opacity-80',
+    'flex flex-col items-center justify-center px-8 py-10 rounded-lg bg-opacity-80 border border-dashed border-gray-300',
     draggedInside && 'bg-neutral-100',
   )
 

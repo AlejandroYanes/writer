@@ -7,10 +7,12 @@ import { ExtensionKit } from '@/extensions/extension-kit';
 type Props = {
   ydoc: YDoc;
   className?: string;
+  user: string | null;
+  article: number | null;
 }
 
 export const useBlockEditor = (props: Props) => {
-  const { ydoc, className } = props;
+  const { ydoc, className, user, article } = props;
   const editor = useEditor(
     {
       immediatelyRender: false,
@@ -31,6 +33,7 @@ export const useBlockEditor = (props: Props) => {
           autocorrect: 'off',
           autocapitalize: 'off',
           class: className ?? 'min-h-full',
+          ...(user && article ? { ['data-user']: user, ['data-article']: article.toString() } : {}),
         },
       },
     },

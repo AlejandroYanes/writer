@@ -1,7 +1,7 @@
 import { type DragEvent, useCallback, useEffect, useRef, useState } from 'react';
 
-import { API } from '@/lib/api';
 import { useToast } from '@/ui';
+import API from '@/extensions/api';
 
 export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) => {
   const [loading, setLoading] = useState(false);
@@ -12,98 +12,98 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
     async (file: File) => {
       setLoading(true)
       try {
-        const url = await API.uploadImage(file)
+        const url = await API.uploadImage(file);
+        if (!url) {
+          throw new Error('failed to upload image');
+        }
 
-        onUpload(url)
+        onUpload(url);
+        setLoading(false);
       } catch (errPayload: any) {
-        const error = errPayload?.response?.data?.error || 'Something went wrong'
         toast({
           variant: 'destructive',
-          children: error,
+          children: 'We could not upload the image. Please try again and if the problem continue, report it to support.',
         });
       }
-      setLoading(false)
+      setLoading(false);
     },
     [onUpload, toast],
-  )
+  );
 
-  return { loading, uploadFile }
+  return { loading, uploadFile };
 }
 
 export const useFileUpload = () => {
-  const fileInput = useRef<HTMLInputElement>(null)
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = useCallback(() => {
-    fileInput.current?.click()
-  }, [])
+    fileInput.current?.click();
+  }, []);
 
-  return { ref: fileInput, handleUploadClick }
+  return { ref: fileInput, handleUploadClick };
 }
 
 export const useDropZone = ({ uploader }: { uploader: (file: File) => Promise<void> }) => {
-  const [isDragging, setIsDragging] = useState<boolean>(false)
-  const [draggedInside, setDraggedInside] = useState<boolean>(false)
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [draggedInside, setDraggedInside] = useState<boolean>(false);
 
   useEffect(() => {
     const dragStartHandler = () => {
-      setIsDragging(true)
+      setIsDragging(true);
     }
 
     const dragEndHandler = () => {
-      setIsDragging(false)
+      setIsDragging(false);
     }
 
-    document.body.addEventListener('dragstart', dragStartHandler)
-    document.body.addEventListener('dragend', dragEndHandler)
+    document.body.addEventListener('dragstart', dragStartHandler);
+    document.body.addEventListener('dragend', dragEndHandler);
 
     return () => {
-      document.body.removeEventListener('dragstart', dragStartHandler)
-      document.body.removeEventListener('dragend', dragEndHandler)
+      document.body.removeEventListener('dragstart', dragStartHandler);
+      document.body.removeEventListener('dragend', dragEndHandler);
     }
-  }, [])
+  }, []);
 
   const onDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
-      setDraggedInside(false)
+      setDraggedInside(false);
       if (e.dataTransfer.files.length === 0) {
-        return
+        return;
       }
 
-      const fileList = e.dataTransfer.files
-
-      const files: File[] = []
+      const fileList = e.dataTransfer.files;
+      const files: File[] = [];
 
       for (let i = 0; i < fileList.length; i += 1) {
-        const item = fileList.item(i)
+        const item = fileList.item(i);
         if (item) {
-          files.push(item)
+          files.push(item);
         }
       }
 
       if (files.some(file => file.type.indexOf('image') === -1)) {
-        return
+        return;
       }
 
-      e.preventDefault()
-
-      const filteredFiles = files.filter(f => f.type.indexOf('image') !== -1)
-
-      const file = filteredFiles.length > 0 ? filteredFiles[0] : undefined
+      e.preventDefault();
+      const filteredFiles = files.filter(f => f.type.indexOf('image') !== -1);
+      const file = filteredFiles.length > 0 ? filteredFiles[0] : undefined;
 
       if (file) {
-        void uploader(file)
+        void uploader(file);
       }
     },
     [uploader],
-  )
+  );
 
   const onDragEnter = () => {
     setDraggedInside(true)
-  }
+  };
 
   const onDragLeave = () => {
     setDraggedInside(false)
-  }
+  };
 
-  return { isDragging, draggedInside, onDragEnter, onDragLeave, onDrop }
+  return { isDragging, draggedInside, onDragEnter, onDragLeave, onDrop };
 }
