@@ -8,7 +8,7 @@ type Props = {
   ydoc: YDoc;
   className?: string;
   user: string | null;
-  article: number | null;
+  article: string | null;
 }
 
 export const useBlockEditor = (props: Props) => {
@@ -33,7 +33,7 @@ export const useBlockEditor = (props: Props) => {
           autocorrect: 'off',
           autocapitalize: 'off',
           class: className ?? 'min-h-full',
-          ...(user && article ? { ['data-user']: user, ['data-article']: article.toString() } : {}),
+          ...(user && article ? { ['data-user']: user, ['data-article']: article } : {}),
         },
       },
     },

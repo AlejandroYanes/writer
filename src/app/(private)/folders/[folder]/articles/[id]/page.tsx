@@ -1,7 +1,11 @@
+'use client';
+
 import { useEffect, useMemo, useState } from 'react';
-import { upload } from '@vercel/blob/client';
 import { useSession } from 'next-auth/react';
 import type { Session } from 'next-auth';
+import { upload } from '@vercel/blob/client';
+import type { Editor } from '@tiptap/react';
+import { Doc as YDoc } from 'yjs';
 import {
   ArchiveIcon,
   Layers3Icon,
@@ -11,9 +15,11 @@ import {
   StarIcon,
   Trash2Icon,
 } from 'lucide-react';
-import { type Editor } from '@tiptap/react';
-import { Doc as YDoc } from 'yjs';
 
+import { api } from '@/trpc/react';
+import { useBlockEditor } from '@/hooks/useBlockEditor';
+import { BlockEditor } from '@/components/BlockEditor';
+import SlidesEditor from '@/components/slides-editor';
 import {
   Button,
   DropdownMenu,
@@ -25,18 +31,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/ui';
-import { api } from '@/trpc/react';
-import { BlockEditor } from '@/components/BlockEditor';
-import { useBlockEditor } from '@/hooks/useBlockEditor';
-import SlidesEditor from '@/components/slides-editor';
 
 interface Props {
-  folder: number;
-  article: number | null;
+  params: {
+    folder: string;
+    id: string;
+  };
 }
 
-export default function Content(props: Props) {
-  const { folder, article } = props;
+export default function ArticlePage(props: Props) {
+  const { folder, id: article } = props.params;
   const { data: session } = useSession();
 
   const [view, setView] = useState<'editor' | 'presentation'>('editor');
@@ -44,12 +48,12 @@ export default function Content(props: Props) {
   const ydoc = useMemo(() => new YDoc(), []);
   const { editor } = useBlockEditor({
     ydoc,
-    article: article,
+    article,
     user: session?.user.id ?? null,
     className: 'h-[calc(100vh_-_56px)] m-0',
   });
 
-  const { data: content, isLoading } = api.articles.getContent.useQuery({ article: article! }, { enabled: !!article });
+  const { data: content, isLoading: isLoading } = api.articles.getContent.useQuery({ article: Number(article) });
 
   useEffect(() => {
     if (editor && content) {
@@ -77,12 +81,12 @@ export default function Content(props: Props) {
           : <SlidesEditor editor={editor} />
       )}
     </div>
-  )
+  );
 }
 
 interface TopRowProps {
-  folder: number;
-  article: number | null;
+  folder: string;
+  article: string;
   editor: Editor | null;
   session: Session | null;
   view: 'editor' | 'presentation';
@@ -95,7 +99,7 @@ function TopRow(props: TopRowProps) {
   const utils = api.useUtils();
   const { mutate: updateContent } = api.articles.updateContent.useMutation({
     onSuccess: () => {
-      void utils.articles.list.invalidate({ folder });
+      void utils.articles.list.invalidate({ folder: Number(folder) });
     },
   });
 
@@ -111,7 +115,7 @@ function TopRow(props: TopRowProps) {
       access: 'public',
       handleUploadUrl: `/api/articles/upload/${userId}/${article}`,
     });
-    updateContent({ article, content_url: newBlob.url });
+    updateContent({ article: Number(article), content_url: newBlob.url });
   };
 
   return (
