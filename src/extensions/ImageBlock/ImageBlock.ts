@@ -17,13 +17,9 @@ declare module '@tiptap/core' {
 
 export const ImageBlock = Image.extend({
   name: 'imageBlock',
-
   group: 'block',
-
   defining: true,
-
   isolating: true,
-
   addAttributes() {
     return {
       src: {

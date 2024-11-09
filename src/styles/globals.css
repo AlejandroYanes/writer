@@ -209,22 +209,12 @@
     padding-left: 1rem;
   }
 
-  hr {
-    @apply border-t border-neutral-200 my-8;
-    height: 1px;
-    width: 100%;
-  }
-
   .is-empty::before {
     @apply text-neutral-400;
     content: attr(data-placeholder);
     float: left;
     height: 0;
     pointer-events: none;
-  }
-
-  div[data-type="horizontalRule"] {
-    margin-bottom: 0;
   }
 }
 

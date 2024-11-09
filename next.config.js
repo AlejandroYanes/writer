@@ -10,7 +10,7 @@ const config = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'e9pb986jsmo6fpka.public.blob.vercel-storage.com/',
+        hostname: 'e9pb986jsmo6fpka.public.blob.vercel-storage.com',
         port: '',
         search: '',
       },

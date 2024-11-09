@@ -1,4 +1,5 @@
 import { type Editor, type JSONContent } from '@tiptap/react';
+import Image from 'next/image';
 
 interface Props {
   editor: Editor;
@@ -8,6 +9,8 @@ export default function SlidesEditor(props: Props) {
   const { editor } = props;
   const doc = editor.getJSON();
   const content = doc.content ?? [];
+
+  console.log('content', content);
 
   const slides = [];
   let temp = [];
@@ -33,6 +36,7 @@ export default function SlidesEditor(props: Props) {
 function processBlocks(blocks: JSONContent[]) {
   const elements = [];
 
+  // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i]!;
 
@@ -61,15 +65,21 @@ function processBlocks(blocks: JSONContent[]) {
     }
 
     if (block.type === 'paragraph') {
-      if (block.content!.length === 0) {
+      if (!block.content) {
         elements.push(<br key={block.id}/>);
         continue;
       }
 
       elements.push(
         <p key={block.id} className="mb-2">
-          {block.content!.map((c: JSONContent) => c.text).join('')}
+          {block.content.map((c: JSONContent) => c.text).join('')}
         </p>
+      );
+    }
+
+    if (block.type === 'imageBlock') {
+      elements.push(
+        <Image src={block.attrs!.src} width={380} height={380} alt={block.attrs!.alt ?? 'document image'} />
       );
     }
   }
