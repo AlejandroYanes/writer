@@ -54,7 +54,10 @@ export default function ArticlePage(props: Props) {
     className: 'h-[calc(100vh_-_56px)] m-0',
   });
 
-  const { data: content, isLoading: isLoading } = api.articles.getContent.useQuery({ article: Number(article) });
+  const { data: content, isLoading: isLoading } = api.articles.getContent.useQuery(
+    { article: Number(article) },
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  );
 
   useEffect(() => {
     if (editor && content) {
