@@ -8,6 +8,7 @@ import type { Editor } from '@tiptap/react';
 import { Doc as YDoc } from 'yjs';
 import {
   ArchiveIcon,
+  ClipboardCopyIcon,
   Layers3Icon,
   MoreVerticalIcon,
   PencilLineIcon,
@@ -137,6 +138,19 @@ function TopRow(props: TopRowProps) {
           <TooltipContent>
             {view === 'editor' ? 'Edit Slides' : 'Edit content'}
           </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => console.log(editor?.getJSON())}
+            >
+              <ClipboardCopyIcon className="h-5 w-5"/>
+              <span className="sr-only">Log the content</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Save</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>

@@ -216,6 +216,10 @@
     height: 0;
     pointer-events: none;
   }
+
+  div.node-imageBlock {
+    @apply mt-16;
+  }
 }
 
 .ProseMirror {
