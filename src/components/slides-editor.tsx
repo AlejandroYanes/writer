@@ -1,6 +1,8 @@
 import { type Editor, type JSONContent } from '@tiptap/react';
 import Image from 'next/image';
 
+import { cn } from '@/ui';
+
 interface Props {
   editor: Editor;
 }
@@ -24,7 +26,7 @@ export default function SlidesEditor(props: Props) {
 
   return (
     <section className="py-16 px-8 h-[calc(100vh_-_56px)] overflow-y-auto">
-      <main className="flex flex-col gap-10 mx-auto max-w-[700px]">
+      <main className="flex flex-col gap-10 mx-auto max-w-[732px]">
         {slides.map((slide, index) => (
           <div key={index} className="border border-gray-200 p-4 rounded-md">{processBlocks(slide)}</div>
         ))}
@@ -42,7 +44,7 @@ function processBlocks(blocks: JSONContent[]) {
 
     if (block.type === 'heading' && block.attrs!.level === 1) {
       elements.push(
-        <h1 key={block.id} className="text-4xl mt-8 mb-8">
+        <h1 key={block.id} className="text-4xl mt-8 mb-8 font-bold">
           {block.content!.map((c: JSONContent) => c.text).join('')}
         </h1>
       );
@@ -50,7 +52,7 @@ function processBlocks(blocks: JSONContent[]) {
 
     if (block.type === 'heading' && block.attrs!.level === 2) {
       elements.push(
-        <h2 key={block.id} className="text-3xl mt-8 mb-8">
+        <h2 key={block.id} className="text-2xl mt-8 mb-8 font-bold">
           {block.content!.map((c: JSONContent) => c.text).join('')}
         </h2>
       );
@@ -71,7 +73,7 @@ function processBlocks(blocks: JSONContent[]) {
       }
 
       elements.push(
-        <p key={block.id} className="mb-2">
+        <p key={block.id} className="mt-6 mb-3">
           {block.content.map((c: JSONContent) => {
             const styles = resolveTextStyles(c);
             const wrapperNodes = resolveWrapperNodes(c);
@@ -87,8 +89,21 @@ function processBlocks(blocks: JSONContent[]) {
     }
 
     if (block.type === 'imageBlock') {
+      const alignment = block.attrs!.align;
       elements.push(
-        <Image src={block.attrs!.src} className="w-full mt-16" width={380} height={380} alt={block.attrs!.alt ?? 'document image'} />
+        <Image
+          src={block.attrs!.src}
+          className={cn(
+            'mt-16',
+            alignment === 'left' && 'ml-0 mr-auto',
+            alignment === 'center' && 'ml-auto mr-auto',
+            alignment === 'right' && 'ml-auto mr-0',
+          )}
+          width={380}
+          height={380}
+          style={{ width: block.attrs!.width }}
+          alt={block.attrs!.alt ?? 'document image'}
+        />
       );
     }
   }
