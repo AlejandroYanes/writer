@@ -1,8 +1,9 @@
 import { type Editor, type JSONContent } from '@tiptap/react';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { cn } from '@/ui';
+import { investorDeck } from '@/templates/investor-deck';
 
 interface Props {
   editor: Editor;
@@ -11,6 +12,8 @@ interface Props {
 export default function SlidesEditor(props: Props) {
   const { editor } = props;
   const doc = editor.getJSON();
+
+  const [template] = useState(investorDeck);
 
   const slides = useMemo(() => {
     const content = doc.content ?? [];
