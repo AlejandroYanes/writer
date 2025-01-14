@@ -1,5 +1,6 @@
 import { type Editor, type JSONContent } from '@tiptap/react';
 import Image from 'next/image';
+import { useMemo } from 'react';
 
 import { cn } from '@/ui';
 
@@ -10,32 +11,38 @@ interface Props {
 export default function SlidesEditor(props: Props) {
   const { editor } = props;
   const doc = editor.getJSON();
-  const content = doc.content ?? [];
 
-  const slides = [];
-  let temp = [];
+  const slides = useMemo(() => {
+    const content = doc.content ?? [];
+    const __slides = [];
+    let temp = [];
 
-  for (const item of content) {
-    if (item.type === 'horizontalRule') {
-      slides.push(temp);
-      temp = [];
-    } else {
-      temp.push(item);
+    for (const item of content) {
+      if (item.type === 'horizontalRule') {
+        __slides.push(temp);
+        temp = [];
+      } else {
+        temp.push(item);
+      }
     }
-  }
+    __slides.push(temp);
+    return __slides;
+  }, [doc.content]);
 
   return (
     <section className="py-16 px-8 h-[calc(100vh_-_56px)] overflow-y-auto">
-      <main className="flex flex-col gap-10 mx-auto max-w-[732px]">
+      <main className="flex flex-col gap-10 mx-auto w-10/12">
         {slides.map((slide, index) => (
-          <div key={index} className="border border-gray-200 p-4 rounded-md">{processBlocks(slide)}</div>
+          <div key={index} className="border border-gray-200 p-4 w-full rounded-md aspect-video">
+            {processBlocks(slide)}
+          </div>
         ))}
       </main>
     </section>
   );
 }
 
-function processBlocks(blocks: JSONContent[]) {
+function processBlocks(blocks: JSONContent[], { level }: { level?: number } = { level: 0 }) {
   const elements = [];
 
   // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -73,7 +80,7 @@ function processBlocks(blocks: JSONContent[]) {
       }
 
       elements.push(
-        <p key={block.id} className="mt-6 mb-3">
+        <p key={block.id} className={level === 0 ? 'mt-6 mb-3' : undefined}>
           {block.content.map((c: JSONContent) => {
             const styles = resolveTextStyles(c);
             const wrapperNodes = resolveWrapperNodes(c);
@@ -104,6 +111,38 @@ function processBlocks(blocks: JSONContent[]) {
           style={{ width: block.attrs!.width }}
           alt={block.attrs!.alt ?? 'document image'}
         />
+      );
+    }
+
+    if (block.type === 'bulletList') {
+      const bulletItems = [];
+
+      for (const point of block.content!) {
+        bulletItems.push(processBlocks(point.content!, { level: (level ?? 0) + 1 }));
+      }
+
+      elements.push(
+        <ul className="list-disc px-4 flex flex-col gap-1">
+          {bulletItems.map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (block.type === 'orderedList') {
+      const bulletItems = [];
+
+      for (const point of block.content!) {
+        bulletItems.push(processBlocks(point.content!, { level: (level ?? 0) + 1 }));
+      }
+
+      elements.push(
+        <ol className="list-decimal pl-8 pr-4 flex flex-col gap-1">
+          {bulletItems.map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ol>,
       );
     }
   }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import type { Session } from 'next-auth';
 import { upload } from '@vercel/blob/client';
@@ -8,6 +9,7 @@ import type { Editor } from '@tiptap/react';
 import { Doc as YDoc } from 'yjs';
 import {
   ArchiveIcon,
+  ArrowLeftIcon,
   ClipboardCopyIcon,
   Layers3Icon,
   MoreVerticalIcon,
@@ -124,6 +126,12 @@ function TopRow(props: TopRowProps) {
 
   return (
     <div className="flex items-center p-2 gap-1 border-b h-[56px]">
+      <Link href={`/folders/${folder}/articles`}>
+        <Button variant="link">
+          <ArrowLeftIcon className="h-4 w-4 mr-1" />
+          Back
+        </Button>
+      </Link>
       <div className="rounded-md ml-auto flex flex-row gap-1 items-center overflow-hidden shrink-0">
         <Tooltip>
           <TooltipTrigger asChild>
