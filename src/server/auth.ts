@@ -43,7 +43,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: '/dashboard',
+    signIn: '/folders',
     verifyRequest: '/verify-email',
     error: '/?sign-in-error=true',
     newUser: '/onboarding',

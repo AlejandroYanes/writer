@@ -5,6 +5,7 @@ import { FolderIcon } from 'lucide-react';
 
 import { api } from '@/trpc/react';
 import { Skeleton, Table, TableBody, TableCell, TableRow } from '@/ui';
+import AddFolderModal from './add-folder-modal';
 
 interface Props {
   folders: { id: number; name: string }[];
@@ -15,7 +16,10 @@ export default function FoldersList(props: Props) {
 
   return (
     <div className="h-screen flex flex-col gap-10 max-w-2xl mx-auto pt-10">
-      <h1 className="text-3xl">Folders</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl">Folders</h1>
+        <AddFolderModal />
+      </div>
       <Table>
         <TableBody>
           {folders.map((folder) => (

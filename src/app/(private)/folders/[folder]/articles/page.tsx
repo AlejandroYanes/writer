@@ -6,6 +6,7 @@ import { FileTextIcon } from 'lucide-react';
 
 import { api } from '@/trpc/react';
 import { Skeleton, Table, TableBody, TableCell, TableRow } from '@/ui';
+import AddArticleModal from '@/app/(private)/folders/[folder]/articles/__components/add-article-modal';
 
 interface Props {
   params: {
@@ -19,7 +20,10 @@ export default function ArticlesPage(props: Props) {
 
   return (
     <div className="flex flex-col gap-10 pt-10 max-w-2xl mx-auto">
-      <h1 className="text-3xl">Articles</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl">Articles</h1>
+        <AddArticleModal folder={Number(folder)} />
+      </div>
       <Table>
         <TableBody>
           {articles.map((article) => (
