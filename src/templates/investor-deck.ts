@@ -8,14 +8,19 @@ export const investorDeck: Template = {
       name: 'presentation',
       sectors: [
         {
+          colSpan: true,
           position: 'top-right',
           alignment: 'right',
-          elements: ['h1', 'h2'],
+          elements: [
+            { tag: 'h1', className: 'text-7xl text-orange-600' },
+            { tag: 'h2', className: 'text-muted-foreground' },
+            { tag: 'h3', className: 'text-muted-foreground' },
+          ],
         },
         {
           position: 'bottom-left',
           alignment: 'left',
-          elements: ['h3', 'p'],
+          elements: [{ tag: 'paragraph' }],
         },
       ],
     },

@@ -1,3 +1,5 @@
+import { type CSSProperties } from 'react';
+
 export interface Template {
   name: string;
   brandColor: string;
@@ -10,9 +12,19 @@ export interface SlideTemplate {
 }
 
 export interface Sector {
+  colSpan?: boolean;
+  rowSpan?: boolean;
   position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   alignment: 'left' | 'center' | 'right';
-  elements: string[];
+  elements: TemplateSectorElement[];
   className?: string;
-  styles?: CSSStyleDeclaration;
+  styles?: CSSProperties;
 }
+
+export interface TemplateSectorElement {
+  tag: BlockElement;
+  className?: string;
+  styles?: CSSProperties;
+}
+
+export type BlockElement = 'h1' | 'h2' | 'h3' | 'paragraph' | 'image' | 'bullet_list' | 'ordered_list';
