@@ -34,15 +34,18 @@ export default function SlidesEditor(props: Props) {
   }, [doc.content]);
 
   return (
-    <section className="py-16 px-8 h-[calc(100vh_-_56px)] overflow-y-auto">
-      <main className="flex flex-col gap-10 mx-auto w-10/12">
+    <section className="py-16 px-8 xl:px-0 h-[calc(100vh_-_56px)] overflow-y-auto">
+      <main className="flex flex-col gap-10 mx-auto w-10/12 max-w-7xl">
         {/*{slides.map((slide, index) => (*/}
         {/*  <div key={index} className="border border-gray-200 p-4 w-full rounded-md aspect-video">*/}
         {/*    {processBlocks(slide, { template })}*/}
         {/*  </div>*/}
         {/*))}*/}
-        <div className="border border-gray-200 p-4 w-full rounded-md aspect-video">
+        <div className="border border-gray-200 w-full rounded-md aspect-video overflow-hidden">
           {processBlocks(slides[0]!, { template: template.slides[0]! })}
+        </div>
+        <div className="border border-gray-200 w-full rounded-md aspect-video overflow-hidden">
+          {processBlocks(slides[1]!, { template: template.slides[1]! })}
         </div>
       </main>
     </section>
@@ -78,7 +81,7 @@ function processBlocks(blocks: JSONContent[], options: ProcessOptions) {
           className={
             cn(
               'flex flex-col gap-6 h-full data-[align=left]:items-start data-[align=center]:items-center data-[align=right]:items-end',
-              'data-[colspan=true]:col-span-2 data-[rowspan=true]:col-span-2',
+              'data-[colspan=true]:col-span-2 data-[rowspan=true]:row-span-2',
               className,
             )
           }
@@ -90,7 +93,7 @@ function processBlocks(blocks: JSONContent[], options: ProcessOptions) {
     });
 
     return (
-      <div className="grid grid-cols-2 gap-6 h-full p-6">
+      <div className={cn('grid grid-cols-2 gap-6 h-full', template.className)}>
         {sectorBlocks}
       </div>
     );
@@ -203,7 +206,7 @@ function processH2(node: JSONContent, options: BlockOptions = {}) {
 
 function processH3(node: JSONContent, options: BlockOptions = {}) {
   return (
-    <h3 key={node.id} className={cn('text-2xl', options.className)} style={options.style}>
+    <h3 key={node.id} className={cn('text-xl', options.className)} style={options.style}>
       {node.content!.map((c: JSONContent) => c.text).join('')}
     </h3>
   );
@@ -237,7 +240,7 @@ function processImage(node: JSONContent, options: BlockOptions = {}) {
     <Image
       src={node.attrs!.src}
       className={cn(
-        'mt-16',
+        'h-full',
         alignment === 'left' && 'ml-0 mr-auto',
         alignment === 'center' && 'ml-auto mr-auto',
         alignment === 'right' && 'ml-auto mr-0',

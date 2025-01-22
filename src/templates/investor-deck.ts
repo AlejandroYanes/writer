@@ -6,6 +6,7 @@ export const investorDeck: Template = {
   slides: [
     {
       name: 'presentation',
+      className: 'px-6 py-10',
       sectors: [
         {
           colSpan: true,
@@ -20,7 +21,33 @@ export const investorDeck: Template = {
         {
           position: 'bottom-left',
           alignment: 'left',
+          className: 'justify-center',
           elements: [{ tag: 'paragraph' }],
+        },
+      ],
+    },
+    {
+      name: 'about-us',
+      sectors: [
+        {
+          rowSpan: true,
+          position: 'top-left',
+          alignment: 'left',
+          elements: [
+            { tag: 'image' },
+          ],
+        },
+        {
+          rowSpan: true,
+          position: 'top-right',
+          alignment: 'left',
+          className: 'px-6 py-10 gap-24',
+          elements: [
+            { tag: 'h1' },
+            { tag: 'h2' },
+            { tag: 'h3' },
+            { tag: 'paragraph' },
+          ],
         },
       ],
     },

@@ -8,6 +8,8 @@ export interface Template {
 
 export interface SlideTemplate {
   name: string;
+  className?: string;
+  styles?: CSSProperties;
   sectors: Sector[];
 }
 
