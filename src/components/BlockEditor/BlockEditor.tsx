@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { type Editor, EditorContent } from '@tiptap/react';
 
 import { LinkMenu } from '@/components/menus';
-import ImageBlockMenu from '@/extensions/ImageBlock/components/ImageBlockMenu';
 import { ColumnsMenu } from '@/extensions/MultiColumn/menus';
 import { TableColumnMenu, TableRowMenu } from '@/extensions/Table/menus';
 import { ContentItemMenu, TextMenu } from '@/components/menus';
@@ -29,7 +28,6 @@ export const BlockEditor = ({ editor }: Props) => {
         <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
         <TableRowMenu editor={editor} appendTo={menuContainerRef} />
         <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
-        <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
       </div>
     </div>
   )

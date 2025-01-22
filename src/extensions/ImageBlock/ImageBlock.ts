@@ -9,8 +9,6 @@ declare module '@tiptap/core' {
     imageBlock: {
       setImageBlock: (attributes: { src: string }) => ReturnType;
       setImageBlockAt: (attributes: { src: string; pos: number | Range }) => ReturnType;
-      setImageBlockAlign: (align: 'left' | 'center' | 'right') => ReturnType;
-      setImageBlockWidth: (width: number) => ReturnType;
     };
   }
 }
@@ -27,20 +25,6 @@ export const ImageBlock = Image.extend({
         parseHTML: element => element.getAttribute('src'),
         renderHTML: attributes => ({
           src: attributes.src,
-        }),
-      },
-      width: {
-        default: '100%',
-        parseHTML: element => element.getAttribute('data-width'),
-        renderHTML: attributes => ({
-          'data-width': attributes.width,
-        }),
-      },
-      align: {
-        default: 'center',
-        parseHTML: element => element.getAttribute('data-align'),
-        renderHTML: attributes => ({
-          'data-align': attributes.align,
         }),
       },
       alt: {
@@ -78,16 +62,6 @@ export const ImageBlock = Image.extend({
           ({ commands }) => {
             return commands.insertContentAt(attrs.pos, { type: 'imageBlock', attrs: { src: attrs.src } })
           },
-
-      setImageBlockAlign:
-        align =>
-          ({ commands }) =>
-            commands.updateAttributes('imageBlock', { align }),
-
-      setImageBlockWidth:
-        width =>
-          ({ commands }) =>
-            commands.updateAttributes('imageBlock', { width: `${Math.max(0, Math.min(100, width))}%` }),
     }
   },
 
