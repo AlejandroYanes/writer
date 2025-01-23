@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { type Node } from '@tiptap/pm/model';
 import { type Editor, NodeViewWrapper } from '@tiptap/react';
 
+import { ImageUpload } from '@/extensions/ImageUpload/view';
+
 interface ImageBlockViewProps {
   editor: Editor;
   getPos: () => number;
@@ -27,10 +29,13 @@ export const ImageBlockView = (props: ImageBlockViewProps) => {
 
   return (
     <NodeViewWrapper>
-      <div className="w-20">
-        <div contentEditable={false} ref={imageWrapperRef}>
-          <Image width={80} height={80} className="block rounded-lg" src={src} alt="" onClick={onClick} />
+      <div className="grid grid-cols-6 gap-6">
+        <div className="w-20">
+          <div contentEditable={false} ref={imageWrapperRef}>
+            <Image width={80} height={80} className="block rounded-lg" src={src} alt="" onClick={onClick} />
+          </div>
         </div>
+        <ImageUpload getPos={getPos} editor={editor} minimal />
       </div>
     </NodeViewWrapper>
   )

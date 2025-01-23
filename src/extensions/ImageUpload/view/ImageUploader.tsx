@@ -2,11 +2,16 @@ import { type ChangeEvent, useCallback } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/Spinner';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/ui/button';
 import { Icon } from '@/components/ui/Icon';
 import { useDropZone, useFileUpload, useUploader } from './hooks';
 
-export const ImageUploader = ({ onUpload }: { onUpload: (url: string) => void }) => {
+interface Props {
+  minimal?: boolean;
+  onUpload: (url: string) => void;
+}
+
+export const ImageUploader = ({ onUpload, minimal }: Props) => {
   const { loading, uploadFile } = useUploader({ onUpload })
   const { handleUploadClick, ref } = useFileUpload()
   const { draggedInside, onDrop, onDragEnter, onDragLeave } = useDropZone({ uploader: uploadFile })
@@ -18,15 +23,25 @@ export const ImageUploader = ({ onUpload }: { onUpload: (url: string) => void })
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8 rounded-lg min-h-[10rem] bg-opacity-80">
+      <div
+        className={cn(
+          'flex items-center justify-center p-8',
+          'rounded-lg bg-opacity-80 border border-dashed border-gray-300',
+          { 'min-h-[10rem] h-56': !minimal, 'h-full': minimal },
+        )}
+      >
         <Spinner className="text-neutral-500" size={1.5} />
       </div>
     )
   }
 
   const wrapperClass = cn(
-    'flex flex-col items-center justify-center px-8 py-10 rounded-lg bg-opacity-80 border border-dashed border-gray-300',
+    'flex flex-col items-center justify-center rounded-lg bg-opacity-80 border border-dashed border-gray-300',
     draggedInside && 'bg-neutral-100',
+    {
+      'px-8 py-10 h-56': !minimal,
+      'h-full': minimal,
+    },
   )
 
   return (
@@ -37,18 +52,26 @@ export const ImageUploader = ({ onUpload }: { onUpload: (url: string) => void })
       onDragLeave={onDragLeave}
       contentEditable={false}
     >
-      <Icon name="Image" className="w-12 h-12 mb-4 text-black dark:text-white opacity-20" />
-      <div className="flex flex-col items-center justify-center gap-2">
-        <div className="text-sm font-medium text-center text-neutral-400 dark:text-neutral-500">
-          {draggedInside ? 'Drop image here' : 'Drag and drop or'}
-        </div>
-        <div>
-          <Button disabled={draggedInside} onClick={handleUploadClick} variant="primary" buttonSize="small">
-            <Icon name="Upload" />
-            Upload an image
-          </Button>
-        </div>
-      </div>
+      {minimal ? (
+        <Button variant="undecorated" className="p-0 h-auto w-auto" onClick={handleUploadClick}>
+          <Icon name="Image" className={cn('w-12 h-12 text-black dark:text-white opacity-20')} />
+        </Button>
+      ) : (
+        <>
+          <Icon name="Image" className={cn('w-12 h-12 text-black dark:text-white opacity-20 mb-4')} />
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className="text-sm font-medium text-center text-neutral-400 dark:text-neutral-500">
+              {draggedInside ? 'Drop image here' : 'Drag and drop or'}
+            </div>
+            <div>
+              <Button variant="black" size="sm" disabled={draggedInside} onClick={handleUploadClick}>
+                <Icon name="Upload" className="mr-1" />
+                Upload an image
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
       <input
         className="w-0 h-0 overflow-hidden opacity-0"
         ref={ref}

@@ -2,8 +2,15 @@ import { type Editor, NodeViewWrapper } from '@tiptap/react';
 import { useCallback } from 'react';
 
 import { ImageUploader } from './ImageUploader';
+import { cn } from '@/ui';
 
-export const ImageUpload = ({ getPos, editor }: { getPos: () => number; editor: Editor }) => {
+interface Props {
+  getPos: () => number;
+  editor: Editor;
+  minimal?: boolean;
+}
+
+export const ImageUpload = ({ getPos, editor, minimal }: Props) => {
   const onUpload = useCallback(
     (url: string) => {
       if (url) {
@@ -20,8 +27,8 @@ export const ImageUpload = ({ getPos, editor }: { getPos: () => number; editor: 
 
   return (
     <NodeViewWrapper>
-      <div className="p-0 m-0" data-drag-handle={true}>
-        <ImageUploader onUpload={onUpload} />
+      <div className={cn('p-0 m-0', { 'h-full': minimal })} data-drag-handle={!minimal}>
+        <ImageUploader onUpload={onUpload} minimal={minimal} />
       </div>
     </NodeViewWrapper>
   )
