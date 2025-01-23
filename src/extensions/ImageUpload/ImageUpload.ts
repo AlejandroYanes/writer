@@ -14,10 +14,10 @@ export const ImageUpload = Node.create({
   name: 'imageUpload',
   isolating: true,
   defining: true,
-  group: 'inline',
+  group: 'block',
   draggable: false,
   selectable: true,
-  inline: true,
+  inline: false,
   parseHTML() {
     return [
       {

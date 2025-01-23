@@ -38,10 +38,7 @@ export const ImageUploader = ({ onUpload, minimal }: Props) => {
   const wrapperClass = cn(
     'flex flex-col items-center justify-center rounded-lg bg-opacity-80 border border-dashed border-gray-300',
     draggedInside && 'bg-neutral-100',
-    {
-      'px-8 py-10 h-56': !minimal,
-      'h-full': minimal,
-    },
+    { 'px-8 py-10 h-56': !minimal, 'h-full': minimal },
   )
 
   return (
