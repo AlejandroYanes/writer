@@ -1,20 +1,19 @@
-import { ReactNodeViewRenderer } from '@tiptap/react'
+import { Node, ReactNodeViewRenderer } from '@tiptap/react';
 import { type Range } from '@tiptap/core'
 
 import { ImageBlockView } from './components/ImageBlockView'
-import { Image } from '../Image';
 
 declare module '@tiptap/core' {
+  // noinspection JSUnusedGlobalSymbols
   interface Commands<ReturnType> {
     imageBlock: {
-      setImageBlock: (attributes: { src: string }) => ReturnType;
       setImageBlockAt: (attributes: { src: string; pos: number | Range }) => ReturnType;
-      extendImageBlock: (attributes: { src: string }) => ReturnType;
+      extendImageBlockAt: (attributes: { src: string; pos: number }) => ReturnType;
     };
   }
 }
 
-export const ImageBlock = Image.extend({
+export const ImageBlock = Node.create({
   name: 'imageBlock',
   group: 'block',
   defining: true,
@@ -38,17 +37,12 @@ export const ImageBlock = Image.extend({
 
   addCommands() {
     return {
-      setImageBlock: (attrs) => {
-        return ({ commands }) => {
-          return commands.insertContent({ type: 'imageBlock', attrs: { images: [attrs.src] } });
-        };
-      },
       setImageBlockAt: (attrs) => {
         return ({ commands }) => {
-          return commands.insertContentAt(attrs.pos, { type: 'imageBlock', attrs: { src: attrs.src } });
+          return commands.insertContentAt(attrs.pos, { type: 'imageBlock', attrs: { images: [attrs.src] } });
         };
       },
-      extendImageBlock: (attrs) => {
+      extendImageBlockAt: (attrs) => {
         return ({ state, dispatch }) => {
           const { tr, doc } = state;
           const type = state.schema.nodes.imageBlock; // Use the correct node type
@@ -62,7 +56,7 @@ export const ImageBlock = Image.extend({
 
           // Iterate through the document to find the first node of type `imageBlock`
           doc.descendants((node, pos) => {
-            if (node.type === type) {
+            if (node.type === type && pos === attrs.pos) {
               found = true;
               const existingImages = node.attrs.images || [];
               const updatedImages = [...existingImages, attrs.src];

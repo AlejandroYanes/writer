@@ -10,48 +10,56 @@ interface Props {
   minimal?: boolean;
 }
 
-export const ImageUpload = ({ editor, minimal }: Props) => {
+export const ImageUpload = ({ getPos, editor, minimal }: Props) => {
   const onUpload = useCallback(
     (url: string) => {
       if (url) {
         const { doc, tr } = editor.state;
         const imageBlockType = editor.schema.nodes.imageBlock;
         const imageUploadType = editor.schema.nodes.imageUpload;
+        const horizontalRuleType = editor.schema.nodes.horizontalRule;
 
-        let imageBlockExists = false;
+        const currentImageUploadPos = getPos(); // Get the position of the current `imageUpload`
+        let sectionStart = 0;
+        let sectionEnd = doc.content.size;
 
-        // Check if any `imageBlock` nodes exist in the document
-        doc.descendants((node) => {
-          if (node.type === imageBlockType) {
-            imageBlockExists = true;
-            return false; // Stop traversal once a match is found
+        // Find the section boundaries around the imageUpload
+        doc.descendants((node, pos) => {
+          if (node.type === horizontalRuleType) {
+            if (pos < currentImageUploadPos) {
+              sectionStart = pos + node.nodeSize; // Update section start after the last <hr> before upload
+            } else if (pos > currentImageUploadPos && sectionEnd === doc.content.size) {
+              sectionEnd = pos; // Update section end at the first <hr> after upload
+              return false;
+            }
           }
-          return true;
         });
 
-        // Remove the last `imageUpload` node if `minimal` is false
+        // Search for an existing imageBlock within the section
+        let imageBlockExists = false;
+        let imageBlockPos: number | undefined = undefined;
+        doc.nodesBetween(sectionStart, sectionEnd, (node, pos) => {
+          if (node.type === imageBlockType) {
+            imageBlockExists = true;
+            imageBlockPos = pos;
+            return false; // Stop traversal once an imageBlock is found
+          }
+        });
+
+        console.log({ sectionStart, sectionEnd, imageBlockExists, imageBlockPos, currentImageUploadPos });
+
+        // Remove the current imageUpload node if minimal = false
         if (!minimal) {
-          let lastImageUploadPos: number | null = null;
+          const currentNode = doc.nodeAt(currentImageUploadPos);
 
-          // Track the position of the last `imageUpload` node
-          doc.descendants((node, pos) => {
-            if (node.type === imageUploadType) {
-              lastImageUploadPos = pos; // Store the last `imageUpload` position
-            }
-          });
-
-          if (lastImageUploadPos !== null) {
-            const lastNode = doc.nodeAt(lastImageUploadPos);
-            if (lastNode) {
-              // Replace the `imageUpload` node with an empty node (effectively deletes it)
-              tr.delete(lastImageUploadPos, (lastImageUploadPos as number) + lastNode.nodeSize);
-            }
+          if (currentNode?.type === imageUploadType) {
+            tr.delete(currentImageUploadPos, currentImageUploadPos + currentNode!.nodeSize);
           }
+        }
 
-          // Dispatch the transaction to remove the imageUpload node
-          if (tr.docChanged) {
-            editor.view.dispatch(tr);
-          }
+        // Dispatch the transaction to update the document
+        if (tr.docChanged) {
+          editor.view.dispatch(tr);
         }
 
         // Handle `imageBlock` logic
@@ -59,24 +67,23 @@ export const ImageUpload = ({ editor, minimal }: Props) => {
           // First dispatch for extending the imageBlock with the new src
           editor
             .chain()
-            .extendImageBlock({ src: url })
+            .extendImageBlockAt({ src: url, pos: imageBlockPos! })
             .focus()
             .run();
         } else {
           // First dispatch for setting a new imageBlock if none exists
           editor
             .chain()
-            .setImageBlock({ src: url })
+            .setImageBlockAt({ src: url, pos: currentImageUploadPos })
             .focus()
             .run();
         }
 
         // Dispatch the transaction to update the imageBlock
         editor.view.dispatch(editor.state.tr);
-
       }
     },
-    [editor, minimal],
+    [getPos, editor, minimal],
   );
 
   return (

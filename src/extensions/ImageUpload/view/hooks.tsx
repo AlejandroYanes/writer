@@ -22,7 +22,14 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
       } catch (errPayload: any) {
         toast({
           variant: 'destructive',
-          description: 'We could not upload the image. Please try again and if the problem continue, report it to support.',
+          description: (
+            <div className="flex flex-col">
+              <span>We could not upload the image.</span>
+              {errPayload?.message ? (
+                <span>{errPayload?.message}</span>
+              ) : null}
+            </div>
+          ),
         });
       }
       setLoading(false);

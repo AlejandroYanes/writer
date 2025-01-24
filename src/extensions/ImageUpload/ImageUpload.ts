@@ -1,4 +1,5 @@
 import { Node, ReactNodeViewRenderer } from '@tiptap/react';
+import { mergeAttributes } from '@tiptap/core';
 
 import { ImageUpload as ImageUploadComponent } from './view/ImageUpload';
 
@@ -18,6 +19,7 @@ export const ImageUpload = Node.create({
   draggable: false,
   selectable: true,
   inline: false,
+
   parseHTML() {
     return [
       {
@@ -26,8 +28,8 @@ export const ImageUpload = Node.create({
     ]
   },
 
-  renderHTML() {
-    return ['div', { 'data-type': this.name }]
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { ...mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 'data-type': this.name }]
   },
 
   addCommands() {
