@@ -22,7 +22,7 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
       } catch (errPayload: any) {
         toast({
           variant: 'destructive',
-          children: 'We could not upload the image. Please try again and if the problem continue, report it to support.',
+          description: 'We could not upload the image. Please try again and if the problem continue, report it to support.',
         });
       }
       setLoading(false);

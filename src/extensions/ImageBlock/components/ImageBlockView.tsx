@@ -5,36 +5,34 @@ import { type Editor, NodeViewWrapper } from '@tiptap/react';
 
 import { ImageUpload } from '@/extensions/ImageUpload/view';
 
-interface ImageBlockViewProps {
+interface Props {
   editor: Editor;
   getPos: () => number;
   node: Node;
   updateAttributes: (attrs: Record<string, string>) => void;
 }
 
-export const ImageBlockView = (props: ImageBlockViewProps) => {
-  const { editor, getPos, node } = props as ImageBlockViewProps & {
+export const ImageBlockView = (props: Props) => {
+  const { editor, getPos, node } = props as Props & {
     node: Node & {
       attrs: {
-        src: string;
+        images: string[];
       };
     };
   }
   const imageWrapperRef = useRef<HTMLDivElement>(null);
-  const { src } = node.attrs;
-
-  const onClick = useCallback(() => {
-    editor.commands.setNodeSelection(getPos())
-  }, [getPos, editor.commands]);
+  const { images } = node.attrs;
 
   return (
     <NodeViewWrapper>
       <div className="grid grid-cols-6 gap-6">
-        <div className="w-20">
-          <div contentEditable={false} ref={imageWrapperRef}>
-            <Image width={80} height={80} className="block rounded-lg" src={src} alt="" onClick={onClick} />
+        {images.map((src, index) => (
+          <div className="w-20" key={index}>
+            <div contentEditable={false} ref={imageWrapperRef}>
+              <Image width={80} height={80} className="block rounded-lg" src={src} alt="" />
+            </div>
           </div>
-        </div>
+        ))}
         <ImageUpload getPos={getPos} editor={editor} minimal />
       </div>
     </NodeViewWrapper>
