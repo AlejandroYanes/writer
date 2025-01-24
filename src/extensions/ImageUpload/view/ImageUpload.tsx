@@ -46,8 +46,6 @@ export const ImageUpload = ({ getPos, editor, minimal }: Props) => {
           }
         });
 
-        console.log({ sectionStart, sectionEnd, imageBlockExists, imageBlockPos, currentImageUploadPos });
-
         // Remove the current imageUpload node if minimal = false
         if (!minimal) {
           const currentNode = doc.nodeAt(currentImageUploadPos);
