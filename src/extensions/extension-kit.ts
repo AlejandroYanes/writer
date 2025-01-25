@@ -1,6 +1,5 @@
 'use client'
 
-import API from '@/extensions/api';
 import {
   BlockquoteFigure,
   CodeBlock,
@@ -92,31 +91,7 @@ export const ExtensionKit = () => [
   // CharacterCount.configure({ limit: 50000 }),
   ImageUpload.configure(),
   ImageBlock,
-  FileHandler.configure({
-    allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
-    onDrop: (currentEditor, files, pos) => {
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      files.forEach(async (file) => {
-        const url = await API.uploadImage(file);
-        if (url) {
-          currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run();
-        }
-      });
-    },
-    onPaste: (currentEditor, files) => {
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      files.forEach(async (file) => {
-        const url = await API.uploadImage(file);
-        if (url) {
-          currentEditor
-            .chain()
-            .setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: url })
-            .focus()
-            .run();
-        }
-      });
-    },
-  }),
+  FileHandler,
   Emoji.configure({
     enableEmoticons: true,
     suggestion: emojiSuggestion,

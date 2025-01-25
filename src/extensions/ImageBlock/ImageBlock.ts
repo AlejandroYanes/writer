@@ -7,8 +7,8 @@ declare module '@tiptap/core' {
   // noinspection JSUnusedGlobalSymbols
   interface Commands<ReturnType> {
     imageBlock: {
-      setImageBlockAt: (attributes: { src: string; pos: number | Range }) => ReturnType;
-      extendImageBlockAt: (attributes: { src: string; pos: number }) => ReturnType;
+      setImagesBlockAt: (attributes: { src: string[]; pos: number | Range }) => ReturnType;
+      extendImagesBlockAt: (attributes: { src: string[]; pos: number }) => ReturnType;
     };
   }
 }
@@ -37,12 +37,12 @@ export const ImageBlock = Node.create({
 
   addCommands() {
     return {
-      setImageBlockAt: (attrs) => {
+      setImagesBlockAt: (attrs) => {
         return ({ commands }) => {
-          return commands.insertContentAt(attrs.pos, { type: 'imageBlock', attrs: { images: [attrs.src] } });
+          return commands.insertContentAt(attrs.pos, { type: 'imageBlock', attrs: { images: attrs.src } });
         };
       },
-      extendImageBlockAt: (attrs) => {
+      extendImagesBlockAt: (attrs) => {
         return ({ state, dispatch }) => {
           const { tr, doc } = state;
           const type = state.schema.nodes.imageBlock; // Use the correct node type
@@ -59,7 +59,7 @@ export const ImageBlock = Node.create({
             if (node.type === type && pos === attrs.pos) {
               found = true;
               const existingImages = node.attrs.images || [];
-              const updatedImages = [...existingImages, attrs.src];
+              const updatedImages = [...existingImages, ...attrs.src];
 
               // Update the node's attributes with the new images array
               tr.setNodeMarkup(pos, undefined, {
