@@ -37,9 +37,9 @@ export const ImageBlockView = (props: Props) => {
 
   return (
     <NodeViewWrapper>
-      <div className="grid grid-cols-6 gap-6 group">
+      <div className="grid grid-cols-6 gap-6">
         {images.map((src, index) => (
-          <div className="w-20 relative" key={index}>
+          <div className="w-20 relative group" key={index}>
             <div contentEditable={false} ref={imageWrapperRef}>
               <Image width={80} height={80} className="block rounded-lg" src={src} alt="" />
             </div>

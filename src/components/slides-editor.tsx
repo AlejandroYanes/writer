@@ -234,18 +234,10 @@ function processParagraph(node: JSONContent, options: BlockOptions = {}) {
 }
 
 function processImage(node: JSONContent, options: BlockOptions = {}) {
-  const alignment = node.attrs!.align;
-
   return (
     <Image
-      src={node.attrs!.src}
-      className={cn(
-        'h-full',
-        alignment === 'left' && 'ml-0 mr-auto',
-        alignment === 'center' && 'ml-auto mr-auto',
-        alignment === 'right' && 'ml-auto mr-0',
-        options.className,
-      )}
+      src={node.attrs!.images[0]}
+      className={cn('w-full', options.className)}
       width={380}
       height={380}
       style={{ width: node.attrs!.width, ...(options.style ?? {}) }}

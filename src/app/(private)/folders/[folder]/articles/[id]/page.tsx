@@ -158,10 +158,10 @@ function TopRow(props: TopRowProps) {
               onClick={() => console.log(editor?.getJSON())}
             >
               <ClipboardCopyIcon className="h-5 w-5"/>
-              <span className="sr-only">Log the content</span>
+              <span className="sr-only">Log the content to the console</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Save</TooltipContent>
+          <TooltipContent>Copy to the console</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
