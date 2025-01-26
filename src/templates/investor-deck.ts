@@ -10,7 +10,6 @@ export const investorDeck: Template = {
       sectors: [
         {
           colSpan: true,
-          position: 'top-right',
           alignment: 'right',
           elements: [
             { tag: 'h1', className: 'text-7xl text-orange-600' },
@@ -19,7 +18,6 @@ export const investorDeck: Template = {
           ],
         },
         {
-          position: 'bottom-left',
           alignment: 'left',
           className: 'justify-center',
           elements: [{ tag: 'paragraph' }],
@@ -31,22 +29,25 @@ export const investorDeck: Template = {
       sectors: [
         {
           rowSpan: true,
-          position: 'top-left',
           alignment: 'left',
           elements: [
-            { tag: 'image' },
+            { tag: 'image', count: 2, className: 'grid grid-cols-1 pt-6 pl-6 pb-6 gap-6' },
           ],
         },
         {
-          rowSpan: true,
-          position: 'top-right',
           alignment: 'left',
-          className: 'px-6 py-10 gap-24',
+          className: 'px-6 pt-10 gap-16',
           elements: [
             { tag: 'h1' },
             { tag: 'h2' },
             { tag: 'h3' },
             { tag: 'paragraph' },
+          ],
+        },
+        {
+          alignment: 'left',
+          elements: [
+            { tag: 'image', count: 2, offset: 2, className: 'grid grid-cols-2 pr-6 pb-6 gap-6' },
           ],
         },
       ],

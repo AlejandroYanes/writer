@@ -9,24 +9,25 @@ export interface Template {
 export interface SlideTemplate {
   name: string;
   className?: string;
-  styles?: CSSProperties;
+  style?: CSSProperties;
   sectors: Sector[];
 }
 
 export interface Sector {
   colSpan?: boolean;
   rowSpan?: boolean;
-  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   alignment: 'left' | 'center' | 'right';
   elements: TemplateSectorElement[];
   className?: string;
-  styles?: CSSProperties;
+  style?: CSSProperties;
 }
 
 export interface TemplateSectorElement {
   tag: BlockElement;
+  offset?: number;
+  count?: number;
   className?: string;
-  styles?: CSSProperties;
+  style?: CSSProperties;
 }
 
 export type BlockElement = 'h1' | 'h2' | 'h3' | 'paragraph' | 'image' | 'bullet_list' | 'ordered_list';

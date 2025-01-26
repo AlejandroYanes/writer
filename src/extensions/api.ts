@@ -1,3 +1,5 @@
+// import { upload } from '@vercel/blob/client';
+
 const API = {
   uploadImage: async (file: File) => {
     const url = await convertBase64(file);

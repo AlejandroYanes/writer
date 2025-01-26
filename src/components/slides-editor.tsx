@@ -1,4 +1,4 @@
-import { type CSSProperties, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type Editor, type JSONContent } from '@tiptap/react';
 import Image from 'next/image';
 
@@ -60,49 +60,13 @@ function processBlocks(blocks: JSONContent[], options: ProcessOptions) {
   const { template } = options;
 
   if (template) {
-    const sectorBlocks = template.sectors.map((sector, index) => {
-      const { elements, alignment, colSpan, rowSpan, className, styles } = sector;
-
-      const content = elements.map((el) => {
-        const __block = blocks.find((b) => resolveBlockComparison(el.tag)(b));
-
-        if (__block) {
-          return processBlockByElement(__block, el);
-        }
-        return null;
-      });
-
-      return (
-        <div
-          key={index}
-          data-align={alignment}
-          data-colspan={colSpan}
-          data-rowspan={rowSpan}
-          className={
-            cn(
-              'flex flex-col gap-6 h-full data-[align=left]:items-start data-[align=center]:items-center data-[align=right]:items-end',
-              'data-[colspan=true]:col-span-2 data-[rowspan=true]:row-span-2',
-              className,
-            )
-          }
-          style={styles}
-        >
-          {content}
-        </div>
-      );
-    });
-
-    return (
-      <div className={cn('grid grid-cols-2 gap-6 h-full', template.className)}>
-        {sectorBlocks}
-      </div>
-    );
+    return parseBlocksToTemplate(blocks, template);
   }
 
-  return parseBlocksToNodes(blocks);
+  return parseBlocksToPlainContent(blocks);
 }
 
-function parseBlocksToNodes(blocks: JSONContent[]) {
+function parseBlocksToPlainContent(blocks: JSONContent[]) {
   const elements = [];
 
   // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -126,7 +90,7 @@ function parseBlocksToNodes(blocks: JSONContent[]) {
     }
 
     if (resolveBlockComparison('image')(block)) {
-      elements.push(processImage(block));
+      elements.push(processImages(block));
     }
 
     if (resolveBlockComparison('bullet_list')(block)) {
@@ -139,6 +103,47 @@ function parseBlocksToNodes(blocks: JSONContent[]) {
   }
 
   return elements;
+}
+
+function parseBlocksToTemplate(blocks: JSONContent[], template: SlideTemplate) {
+  const sectorBlocks = template.sectors.map((sector, index) => {
+    const { elements, alignment, colSpan, rowSpan, className, style } = sector;
+
+    const content = elements.map((el) => {
+      const __block = blocks.find((b) => resolveBlockComparison(el.tag)(b));
+
+      if (__block) {
+        return processBlockByElement(__block, el);
+      }
+      return null;
+    });
+
+    return (
+      <div
+        key={index}
+        data-align={alignment}
+        data-colspan={colSpan}
+        data-rowspan={rowSpan}
+        className={
+          cn(
+            'flex flex-col gap-6 h-full',
+            'data-[align=left]:items-start data-[align=center]:items-center data-[align=right]:items-end',
+            'data-[colspan=true]:col-span-2 data-[rowspan=true]:row-span-2',
+            className,
+          )
+        }
+        style={style}
+      >
+        {content}
+      </div>
+    );
+  });
+
+  return (
+    <div className={cn('grid grid-cols-2 grid-rows-2 gap-6 h-full', template.className)}>
+      {sectorBlocks}
+    </div>
+  );
 }
 
 function resolveBlockComparison(element: BlockElement) {
@@ -173,7 +178,7 @@ function processBlockByElement(block: JSONContent, element: TemplateSectorElemen
     case 'paragraph':
       return processParagraph(block, element);
     case 'image':
-      return processImage(block, element);
+      return processImages(block, element);
     case 'bullet_list':
       return processBulletList(block, element);
     case 'ordered_list':
@@ -183,12 +188,9 @@ function processBlockByElement(block: JSONContent, element: TemplateSectorElemen
   }
 }
 
-interface BlockOptions {
-  className?: string;
-  style?: CSSProperties;
-}
+type BlockProperties = Omit<TemplateSectorElement, 'tag'>;
 
-function processH1(node: JSONContent, options: BlockOptions = {}) {
+function processH1(node: JSONContent, options: BlockProperties = {}) {
   return (
     <h1 key={node.id} className={cn('text-4xl font-bold', options.className)} style={options.style}>
       {node.content!.map((c: JSONContent) => c.text).join('')}
@@ -196,7 +198,7 @@ function processH1(node: JSONContent, options: BlockOptions = {}) {
   );
 }
 
-function processH2(node: JSONContent, options: BlockOptions = {}) {
+function processH2(node: JSONContent, options: BlockProperties = {}) {
   return (
     <h2 key={node.id} className={cn('text-2xl font-bold', options.className)} style={options.style}>
       {node.content!.map((c: JSONContent) => c.text).join('')}
@@ -204,7 +206,7 @@ function processH2(node: JSONContent, options: BlockOptions = {}) {
   );
 }
 
-function processH3(node: JSONContent, options: BlockOptions = {}) {
+function processH3(node: JSONContent, options: BlockProperties = {}) {
   return (
     <h3 key={node.id} className={cn('text-xl', options.className)} style={options.style}>
       {node.content!.map((c: JSONContent) => c.text).join('')}
@@ -212,7 +214,7 @@ function processH3(node: JSONContent, options: BlockOptions = {}) {
   );
 }
 
-function processParagraph(node: JSONContent, options: BlockOptions = {}) {
+function processParagraph(node: JSONContent, options: BlockProperties = {}) {
   if (!node.content) {
     return <br key={node.id}/>;
   } else {
@@ -233,20 +235,41 @@ function processParagraph(node: JSONContent, options: BlockOptions = {}) {
   }
 }
 
-function processImage(node: JSONContent, options: BlockOptions = {}) {
+function processImages(node: JSONContent, options: BlockProperties = {}) {
+  let __images: string[] = [];
+
+  if (options.count) {
+    if (options.offset) {
+      const end = Math.min(options.count + options.offset, node.attrs!.images.length);
+      __images = node.attrs!.images.slice(options.offset, end);
+    } else {
+      __images = node.attrs!.images.slice(options.offset, options.count);
+    }
+  }
+
+  if (!__images.length) return null;
+
+  const imageNodes = __images.map((image: string, index: number) => (
+    <div key={index} className="relative overflow-hidden">
+      <Image
+        src={image}
+        width={380}
+        height={380}
+        style={{ ...(options.style ?? {}) }}
+        alt={node.attrs!.alt ?? 'document image'}
+        className="max-h-full h-full w-full max-w-full absolute top-0 right-0 bottom-0 left-0 object-cover"
+      />
+    </div>
+  ));
+
   return (
-    <Image
-      src={node.attrs!.images[0]}
-      className={cn('w-full', options.className)}
-      width={380}
-      height={380}
-      style={{ width: node.attrs!.width, ...(options.style ?? {}) }}
-      alt={node.attrs!.alt ?? 'document image'}
-    />
+    <div className={cn('h-full w-full max-h-full max-w-full', options.className)}>
+      {imageNodes}
+    </div>
   );
 }
 
-function processBulletList(node: JSONContent, options: BlockOptions = {}) {
+function processBulletList(node: JSONContent, options: BlockProperties = {}) {
   const bulletItems = [];
 
   for (const point of node.content!) {
@@ -262,11 +285,11 @@ function processBulletList(node: JSONContent, options: BlockOptions = {}) {
   );
 }
 
-function processOrderedList(node: JSONContent, options: BlockOptions = {}) {
+function processOrderedList(node: JSONContent, options: BlockProperties = {}) {
   const bulletItems = [];
 
   for (const point of node.content!) {
-    bulletItems.push(parseBlocksToNodes(point.content!));
+    bulletItems.push(parseBlocksToPlainContent(point.content!));
   }
 
   return (

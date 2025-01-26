@@ -155,19 +155,6 @@ function TopRow(props: TopRowProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => console.log(editor?.getJSON())}
-            >
-              <ClipboardCopyIcon className="h-5 w-5"/>
-              <span className="sr-only">Log the content to the console</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Copy to the console</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
               onClick={saveContent}
             >
               <SaveIcon className="h-5 w-5"/>
@@ -175,6 +162,19 @@ function TopRow(props: TopRowProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>Save</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => console.log(editor?.getJSON())}
+            >
+              <ClipboardCopyIcon className="h-5 w-5"/>
+              <span className="sr-only">Log the content to the console</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Copy to the console</TooltipContent>
         </Tooltip>
       </div>
 

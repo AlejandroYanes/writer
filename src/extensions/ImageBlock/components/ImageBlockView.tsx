@@ -39,14 +39,14 @@ export const ImageBlockView = (props: Props) => {
     <NodeViewWrapper>
       <div className="grid grid-cols-6 gap-6">
         {images.map((src, index) => (
-          <div className="w-20 relative group" key={index}>
-            <div contentEditable={false} ref={imageWrapperRef}>
+          <div className="w-20" key={index}>
+            <div className="relative group" contentEditable={false} ref={imageWrapperRef}>
               <Image width={80} height={80} className="block rounded-lg" src={src} alt="" />
-            </div>
-            <div className="absolute top-0 w-full h-full flex items-center justify-center bg-neutral-50/50 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button variant="black" size="icon" onClick={() => removeImage(src)}>
-                <Trash2Icon className="h-4 w-4" />
-              </Button>
+              <div className="absolute top-0 w-full h-full flex items-center justify-center bg-neutral-50/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button variant="black" size="icon" onClick={() => removeImage(src)}>
+                  <Trash2Icon className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         ))}
